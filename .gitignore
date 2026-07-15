@@ -42,13 +42,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Platform specific
+# Platform specific — build output only (NOT source web/)
+/build/
 **/ios/
 **/android/
 **/linux/
 **/macos/
 **/windows/
-**/web/
 
 # Environment variables
 .env
@@ -77,9 +77,5 @@ packages/*/.flutter-plugins-dependencies
 packages/*/build/
 packages/*/pubspec.lock
 
-# Apps
-apps/*/.dart_tool/
-apps/*/.flutter-plugins
-apps/*/.flutter-plugins-dependencies
-apps/*/build/
-apps/*/pubspec.lock
+# Apps — commit pubspec.lock for reproducible builds
+# apps/*/pubspec.lock

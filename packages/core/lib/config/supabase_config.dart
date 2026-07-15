@@ -1,26 +1,28 @@
-class SupabaseConfig {
-  const SupabaseConfig._();
+import 'package:flutter/foundation.dart';
 
-  // ── Environment ───────────────────────────────────────
-  // Replace with real values from .env file in production
+class SupabaseConfig {
+  SupabaseConfig._();
+
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://your-project.supabase.co',
+    defaultValue: 'https://iwtqgxqpblmvahzsnnge.supabase.co',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'your-anon-key-here',
+    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3dHFneHFwYmxtdmFoenNubmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwMTA0MjgsImV4cCI6MjA5OTU4NjQyOH0.db7sJpHNFLe_RicYD14u322NverDHgL9ss1EKtwZ3-I',
   );
 
-  // ── Table Names ───────────────────────────────────────
-  static const String studios = 'studios';
-  static const String users = 'users';
-  static const String professionals = 'professionals';
-  static const String services = 'services';
-  static const String appointments = 'appointments';
-  static const String experiences = 'experiences';
-  static const String loyalty = 'loyalty';
-  static const String memories = 'memories';
-  static const String campaigns = 'campaigns';
+  static bool get isConfigured =>
+      supabaseUrl != 'https://your-project.supabase.co' &&
+      supabaseAnonKey != 'your-anon-key';
+
+  static void debugPrintConfig() {
+    if (kDebugMode) {
+      print('Supabase Config:');
+      print('  URL: $supabaseUrl');
+      print('  Anon Key: ${supabaseAnonKey.substring(0, 20)}...');
+      print('  Configured: $isConfigured');
+    }
+  }
 }

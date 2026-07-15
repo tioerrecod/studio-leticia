@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:design_system/design_system.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -10,37 +9,29 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _pageController = PageController();
+  final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final _pages = const [
-    _OnboardingData(
-      emoji: '\u{1F48E}',
-      title: 'Sua jornada de beleza',
-      subtitle: 'Cada visita ao Studio Let\u00edcia \u00e9 uma experi\u00eancia \u00fanica pensada para real\u00e7ar sua ess\u00eancia.',
+  final List<OnboardingPage> _pages = const [
+    OnboardingPage(
+      title: 'Bem-vinda ao\nStudio Letícia',
+      subtitle: 'Sua experiência de beleza premium começa aqui',
+      icon: Icons.spa_outlined,
+      gradient: [SLColors.champagne, SLColors.gold],
     ),
-    _OnboardingData(
-      emoji: '\u{1F9E0}',
-      title: 'Intelig\u00eancia que te conhece',
-      subtitle: 'Nossa IA aprende suas prefer\u00eancias e recomenda o tratamento perfeito no momento ideal para voc\u00ea.',
+    OnboardingPage(
+      title: 'Agende com\nFacilidade',
+      subtitle: 'Escolha seu horário favorito em poucos toques',
+      icon: Icons.calendar_today_outlined,
+      gradient: [SLColors.sage, SLColors.champagne],
     ),
-    _OnboardingData(
-      emoji: '\u2728',
-      title: 'Pronta para brilhar?',
-      subtitle: 'Prepare-se para viver a experi\u00eancia de beleza mais sofisticada da sua vida.',
+    OnboardingPage(
+      title: 'Experiência\nPersonalizada',
+      subtitle: 'Recomendações inteligentes baseadas no seu perfil',
+      icon: Icons.auto_awesome_outlined,
+      gradient: [SLColors.gold, SLColors.champagne],
     ),
   ];
-
-  void _next() {
-    if (_currentPage < _pages.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      context.go('/home');
-    }
-  }
 
   @override
   void dispose() {
@@ -55,170 +46,106 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar with skip
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                SLSpacing.xl, SLSpacing.md, SLSpacing.xl, 0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () => context.go('/home'),
-                    child: Text(
-                      'Pular',
-                      style: SLTypography.bodySmall.copyWith(
-                        color: SLColors.textSecondary,
-                        letterSpacing: 1,
-                      ),
-                    ),
+            // Skip Button
+            Align(
+              alignment: Alignment.topRight,
+              child: TextButton(
+                onPressed: () => _navigateToHome(),
+                child: Text(
+                  'Pular',
+                  style: SLTypography.body.copyWith(
+                    color: SLColors.textSecondary,
                   ),
-                ],
+                ),
               ),
             ),
 
-            // Pages
+            // Page View
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                onPageChanged: (i) => setState(() => _currentPage = i),
                 itemCount: _pages.length,
-                itemBuilder: (_, i) {
-                  final page = _pages[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: SLSpacing.xxl),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Emoji in elegant circular frame
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: SLColors.surface,
-                            border: Border.all(
-                              color: SLColors.border,
-                              width: 0.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: SLColors.carbon.withValues(alpha: 0.04),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(page.emoji, style: const TextStyle(fontSize: 42)),
-                          ),
-                        ),
-                        const SizedBox(height: SLSpacing.xxxl + SLSpacing.md),
-
-                        // Title
-                        Text(
-                          page.title,
-                          style: SLTypography.h1.copyWith(
-                            color: SLColors.carbon,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: SLSpacing.lg),
-
-                        // Gold divider
-                        Container(
-                          width: 32,
-                          height: 1,
-                          color: SLColors.champagne,
-                        ),
-                        const SizedBox(height: SLSpacing.lg),
-
-                        // Subtitle
-                        Text(
-                          page.subtitle,
-                          style: SLTypography.body.copyWith(
-                            color: SLColors.textSecondary,
-                            height: 1.7,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
+                itemBuilder: (context, index) {
+                  return _OnboardingPageView(page: _pages[index]);
                 },
               ),
             ),
 
-            // Bottom section
+            // Page Indicators
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: SLSpacing.xl),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  _pages.length,
+                  (index) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: _currentPage == index ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: _currentPage == index
+                          ? SLColors.champagne
+                          : SLColors.border,
+                      borderRadius: SLRadius.chip,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Action Button
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                SLSpacing.xl, SLSpacing.md, SLSpacing.xl, SLSpacing.xxxl,
+                SLSpacing.xl, 0, SLSpacing.xl, SLSpacing.xxl,
               ),
-              child: Column(
-                children: [
-                  // Minimal pagination dots
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(_pages.length, (i) {
-                      final isActive = i == _currentPage;
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: isActive ? 20 : 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: isActive ? SLColors.carbon : SLColors.divider,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      );
-                    }),
-                  ),
-
-                  const SizedBox(height: SLSpacing.xxl),
-
-                  // Premium gold CTA
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: SLRadius.button,
-                        gradient: const LinearGradient(
-                          colors: [SLColors.champagne, SLColors.gold],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: SLColors.champagne.withValues(alpha: 0.25),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [SLColors.champagne, SLColors.gold],
+                    ),
+                    borderRadius: SLRadius.card,
+                    boxShadow: [
+                      BoxShadow(
+                        color: SLColors.champagne.withValues(alpha: 0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
-                      child: ElevatedButton(
-                        onPressed: _next,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.textOnDark,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: SLRadius.button,
-                          ),
-                        ),
-                        child: Text(
-                          _currentPage < _pages.length - 1
-                              ? 'Continuar'
-                              : 'Come\u00e7ar',
-                          style: SLTypography.button.copyWith(
-                            letterSpacing: 1.5,
-                          ),
-                        ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_currentPage < _pages.length - 1) {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      } else {
+                        _navigateToHome();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: SLColors.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: SLRadius.card,
+                      ),
+                    ),
+                    child: Text(
+                      _currentPage < _pages.length - 1 ? 'Próximo' : 'Começar',
+                      style: SLTypography.button.copyWith(
+                        letterSpacing: 1,
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -226,16 +153,89 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
   }
+
+  void _navigateToHome() {
+    // TODO: Navigate to home screen
+    Navigator.of(context).pushReplacementNamed('/home');
+  }
 }
 
-class _OnboardingData {
-  final String emoji;
+class _OnboardingPageView extends StatelessWidget {
+  final OnboardingPage page;
+
+  const _OnboardingPageView({required this.page});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: SLSpacing.xxl),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Icon
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: page.gradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: page.gradient[0].withValues(alpha: 0.3),
+                  blurRadius: 32,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Icon(
+              page.icon,
+              size: 48,
+              color: SLColors.surface,
+            ),
+          ),
+          const SizedBox(height: SLSpacing.xxl),
+
+          // Title
+          Text(
+            page.title,
+            style: SLTypography.display.copyWith(
+              color: SLColors.carbon,
+              fontWeight: FontWeight.w300,
+              height: 1.2,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: SLSpacing.md),
+
+          // Subtitle
+          Text(
+            page.subtitle,
+            style: SLTypography.bodyLarge.copyWith(
+              color: SLColors.textSecondary,
+              height: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class OnboardingPage {
   final String title;
   final String subtitle;
+  final IconData icon;
+  final List<Color> gradient;
 
-  const _OnboardingData({
-    required this.emoji,
+  const OnboardingPage({
     required this.title,
     required this.subtitle,
+    required this.icon,
+    required this.gradient,
   });
 }

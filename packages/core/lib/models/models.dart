@@ -5,3 +5,5 @@ export 'professional.dart';
 export 'studio.dart';
 export 'experience_stage.dart';
 export 'loyalty_tier.dart';
+export 'customer.dart';
+export 'financial.dart';

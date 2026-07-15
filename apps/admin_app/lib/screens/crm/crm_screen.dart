@@ -1,74 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system/design_system.dart';
+import 'package:core/core.dart';
+import '../../providers/providers.dart';
 
-class CrmScreen extends StatelessWidget {
+class CrmScreen extends ConsumerWidget {
   const CrmScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final customersAsync = ref.watch(customersProvider);
+    final searchQuery = ref.watch(customerSearchProvider);
+
     return Scaffold(
       backgroundColor: SLColors.background,
       appBar: AppBar(
         title: Text(
-          'CRM 360\u00b0',
+          'Clientes',
           style: SLTypography.h3.copyWith(
             color: SLColors.carbon,
             fontWeight: FontWeight.w400,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add_outlined, color: SLColors.champagne),
+            onPressed: () {
+              // TODO: Navigate to create customer
+            },
+          ),
+        ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(SLSpacing.md),
+      body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: SLSpacing.md),
-            decoration: BoxDecoration(
-              color: SLColors.surface,
-              borderRadius: SLRadius.input,
-              border: Border.all(color: SLColors.border, width: 0.5),
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              SLSpacing.lg, SLSpacing.md, SLSpacing.lg, SLSpacing.sm,
             ),
-            child: const Row(
-              children: [
-                Icon(Icons.search, color: SLColors.textDisabled, size: 18),
-                SizedBox(width: SLSpacing.sm),
-                Text(
-                  'Buscar cliente...',
-                  style: TextStyle(
-                    color: SLColors.textDisabled,
-                    fontSize: 14,
-                  ),
+            child: TextField(
+              onChanged: (value) => ref.read(customerSearchProvider.notifier).state = value,
+              decoration: InputDecoration(
+                hintText: 'Buscar cliente...',
+                hintStyle: SLTypography.body.copyWith(color: SLColors.textDisabled),
+                prefixIcon: const Icon(Icons.search, color: SLColors.textSecondary),
+                filled: true,
+                fillColor: SLColors.surface,
+                border: OutlineInputBorder(
+                  borderRadius: SLRadius.card,
+                  borderSide: BorderSide(color: SLColors.border),
                 ),
-              ],
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: SLRadius.card,
+                  borderSide: BorderSide(color: SLColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: SLRadius.card,
+                  borderSide: const BorderSide(color: SLColors.champagne),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: SLSpacing.md,
+                  vertical: SLSpacing.sm,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: SLSpacing.xl),
 
-          _ClientCard(
-            name: 'Rafaela',
-            visits: 12,
-            lastVisit: '15 jun 2026',
-            totalSpent: 'R\$ 1.320',
-            nextAppointment: '20 jul 2026',
-          ),
-          _ClientCard(
-            name: 'Mariana',
-            visits: 8,
-            lastVisit: '10 jun 2026',
-            totalSpent: 'R\$ 890',
-          ),
-          _ClientCard(
-            name: 'Ana Beatriz',
-            visits: 24,
-            lastVisit: '05 jul 2026',
-            totalSpent: 'R\$ 3.450',
-            nextAppointment: '14 jul 2026',
-          ),
-          _ClientCard(
-            name: 'Camila',
-            visits: 15,
-            lastVisit: '20 mai 2026',
-            totalSpent: 'R\$ 1.890',
+          // Customer List
+          Expanded(
+            child: customersAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: SLColors.champagne),
+              ),
+              error: (e, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: SLColors.textSecondary),
+                    const SizedBox(height: SLSpacing.md),
+                    Text('Erro ao carregar clientes', style: SLTypography.body.copyWith(color: SLColors.textSecondary)),
+                    const SizedBox(height: SLSpacing.sm),
+                    TextButton(
+                      onPressed: () => ref.invalidate(customersProvider),
+                      child: Text('Tentar novamente', style: SLTypography.button.copyWith(color: SLColors.champagne)),
+                    ),
+                  ],
+                ),
+              ),
+              data: (customers) {
+                if (customers.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.people_outline, size: 64, color: SLColors.textDisabled),
+                        const SizedBox(height: SLSpacing.md),
+                        Text(
+                          'Nenhum cliente encontrado',
+                          style: SLTypography.h3.copyWith(color: SLColors.textSecondary),
+                        ),
+                        const SizedBox(height: SLSpacing.sm),
+                        Text(
+                          'Cadastre o primeiro cliente',
+                          style: SLTypography.body.copyWith(color: SLColors.textDisabled),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: SLSpacing.lg,
+                    vertical: SLSpacing.sm,
+                  ),
+                  itemCount: customers.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: SLSpacing.sm),
+                  itemBuilder: (context, index) {
+                    final customer = customers[index];
+                    return _CustomerCard(customer: customer);
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -76,25 +131,16 @@ class CrmScreen extends StatelessWidget {
   }
 }
 
-class _ClientCard extends StatelessWidget {
-  final String name;
-  final int visits;
-  final String lastVisit;
-  final String totalSpent;
-  final String? nextAppointment;
+class _CustomerCard extends StatelessWidget {
+  final Customer customer;
 
-  const _ClientCard({
-    required this.name,
-    required this.visits,
-    required this.lastVisit,
-    required this.totalSpent,
-    this.nextAppointment,
-  });
+  const _CustomerCard({required this.customer});
 
   @override
   Widget build(BuildContext context) {
+    final tier = _getTier(customer.totalSpent);
+
     return Container(
-      margin: const EdgeInsets.only(bottom: SLSpacing.sm),
       padding: const EdgeInsets.all(SLSpacing.md),
       decoration: BoxDecoration(
         color: SLColors.surface,
@@ -102,7 +148,7 @@ class _ClientCard extends StatelessWidget {
         border: Border.all(color: SLColors.border, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: SLColors.carbon.withValues(alpha: 0.03),
+            color: SLColors.carbon.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -110,89 +156,181 @@ class _ClientCard extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Avatar
           Container(
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             decoration: const BoxDecoration(
-              shape: BoxShape.circle,
               color: SLColors.cream,
+              shape: BoxShape.circle,
             ),
-            child: const Center(
-              child: Icon(Icons.person, color: SLColors.champagne, size: 22),
-            ),
+            child: customer.avatarUrl != null
+                ? ClipOval(
+                    child: Image.network(
+                      customer.avatarUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Center(
+                        child: Text(
+                          customer.initials,
+                          style: SLTypography.body.copyWith(
+                            color: SLColors.champagne,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      customer.initials,
+                      style: SLTypography.body.copyWith(
+                        color: SLColors.champagne,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
           ),
           const SizedBox(width: SLSpacing.md),
+
+          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Text(
-                      name,
-                      style: SLTypography.body.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: SLColors.carbon,
+                    Expanded(
+                      child: Text(
+                        customer.name,
+                        style: SLTypography.body.copyWith(
+                          color: SLColors.carbon,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    const Spacer(),
-                    Text(
-                      '$visits visitas',
-                      style: SLTypography.caption.copyWith(
-                        color: SLColors.textSecondary,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: SLSpacing.sm,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getTierColor(tier).withValues(alpha: 0.1),
+                        borderRadius: SLRadius.chip,
+                      ),
+                      child: Text(
+                        tier,
+                        style: SLTypography.overline.copyWith(
+                          color: _getTierColor(tier),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 2),
+                if (customer.phone != null)
+                  Text(
+                    customer.phone!,
+                    style: SLTypography.caption.copyWith(
+                      color: SLColors.textSecondary,
+                    ),
+                  ),
                 const SizedBox(height: SLSpacing.xs),
                 Row(
                   children: [
-                    Text(
-                      totalSpent,
-                      style: SLTypography.bodySmall.copyWith(
-                        color: SLColors.champagne,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    _InfoBadge(
+                      icon: Icons.calendar_today,
+                      label: '${customer.totalVisits} visitas',
                     ),
                     const SizedBox(width: SLSpacing.sm),
-                    Text(
-                      '\u00daltima: $lastVisit',
-                      style: SLTypography.caption.copyWith(
-                        color: SLColors.textSecondary,
-                      ),
+                    _InfoBadge(
+                      icon: Icons.attach_money,
+                      label: customer.formattedTotalSpent,
                     ),
                   ],
                 ),
-                if (nextAppointment != null) ...[
+                if (customer.tags.isNotEmpty) ...[
                   const SizedBox(height: SLSpacing.xs),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: SLSpacing.sm,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: SLColors.sage.withValues(alpha: 0.1),
-                      borderRadius: SLRadius.chip,
-                    ),
-                    child: Text(
-                      'Pr\u00f3ximo: $nextAppointment',
-                      style: SLTypography.caption.copyWith(
-                        color: SLColors.sage,
-                        fontWeight: FontWeight.w600,
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: customer.tags.map((tag) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
                       ),
-                    ),
+                      decoration: BoxDecoration(
+                        color: SLColors.cream,
+                        borderRadius: SLRadius.chip,
+                      ),
+                      child: Text(
+                        tag,
+                        style: SLTypography.overline.copyWith(
+                          color: SLColors.champagne,
+                          fontSize: 9,
+                        ),
+                      ),
+                    )).toList(),
                   ),
                 ],
               ],
             ),
           ),
-          const Icon(
+
+          const SizedBox(width: SLSpacing.sm),
+          Icon(
             Icons.chevron_right,
             color: SLColors.textDisabled,
-            size: 18,
+            size: 20,
           ),
         ],
       ),
+    );
+  }
+
+  String _getTier(double totalSpent) {
+    if (totalSpent >= 5000) return 'PLATINA';
+    if (totalSpent >= 2000) return 'OURO';
+    if (totalSpent >= 1000) return 'PRATA';
+    return 'BRONZE';
+  }
+
+  Color _getTierColor(String tier) {
+    switch (tier) {
+      case 'PLATINA':
+        return SLColors.sage;
+      case 'OURO':
+        return SLColors.gold;
+      case 'PRATA':
+        return SLColors.textSecondary;
+      default:
+        return SLColors.champagne;
+    }
+  }
+}
+
+class _InfoBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _InfoBadge({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 12, color: SLColors.textDisabled),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: SLTypography.overline.copyWith(
+            color: SLColors.textSecondary,
+            fontSize: 10,
+          ),
+        ),
+      ],
     );
   }
 }

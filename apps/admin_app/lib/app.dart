@@ -13,7 +13,7 @@ class BeautyCommandCenterApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Beauty Command Center',
       debugShowCheckedModeBanner: false,
-      theme: StudioTheme.light,
+      theme: StudioTheme.dark,
       routerConfig: router,
     );
   }

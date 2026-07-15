@@ -90,7 +90,7 @@ class _SLSuccessAnimationState extends State<SLSuccessAnimation>
             child: const Center(
               child: Icon(
                 Icons.check,
-                color: SLColors.ivory,
+                color: SLColors.background,
                 size: 40,
               ),
             ),

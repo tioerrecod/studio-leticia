@@ -53,7 +53,7 @@ class SLBeforeAfter extends StatelessWidget {
                     vertical: SLSpacing.mini,
                   ),
                   decoration: BoxDecoration(
-                    color: SLColors.carbon.withValues(alpha: 0.7),
+                    color: SLColors.surface.withValues(alpha: 0.9),
                     borderRadius: SLRadius.chip,
                   ),
                   child: Text(
@@ -103,7 +103,7 @@ class SLBeforeAfter extends StatelessWidget {
                   child: Text(
                     afterLabel,
                     style: SLTypography.overline.copyWith(
-                      color: SLColors.ivory,
+                      color: SLColors.background,
                       letterSpacing: 1.5,
                     ),
                   ),

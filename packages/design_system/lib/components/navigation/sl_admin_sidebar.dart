@@ -31,7 +31,7 @@ class SLAdminSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 240,
-      color: SLColors.ivory,
+      color: SLColors.surface,
       child: Column(
         children: [
           // Logo

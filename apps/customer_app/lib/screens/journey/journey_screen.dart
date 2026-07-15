@@ -1,58 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system/design_system.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../providers/supabase_providers.dart';
 
-class JourneyScreen extends StatefulWidget {
+class JourneyScreen extends ConsumerStatefulWidget {
   const JourneyScreen({super.key});
 
   @override
-  State<JourneyScreen> createState() => _JourneyScreenState();
+  ConsumerState<JourneyScreen> createState() => _JourneyScreenState();
 }
 
-class _JourneyScreenState extends State<JourneyScreen> {
+class _JourneyScreenState extends ConsumerState<JourneyScreen> {
   int _selectedRating = 0;
+  bool _isSubmitting = false;
 
-  final _beforeStages = const [
-    EmotionalStage(
-        title: 'Confirma\u00e7\u00e3o',
-        emoji: '\u2705',
-        isCompleted: true),
-    EmotionalStage(
-        title: 'Inspira\u00e7\u00f5es',
-        emoji: '\u{1F4F7}',
-        isCompleted: true),
-    EmotionalStage(
-        title: 'Lembrete', emoji: '\u{1F514}', isActive: true),
-  ];
-
-  final _duringStages = const [
-    EmotionalStage(
-        title: 'Recep\u00e7\u00e3o',
-        emoji: '\u{1F44B}',
-        isCompleted: true,
-        description: 'Chegada e boas-vindas'),
-    EmotionalStage(
-        title: 'Diagn\u00f3stico',
-        emoji: '\u{1F9D1}\u200D\u{1F3EB}',
-        isCompleted: true,
-        description: 'An\u00e1lise capilar'),
-    EmotionalStage(
-        title: 'Procedimento',
-        emoji: '\u2728',
-        isActive: true,
-        description: 'Hidrata\u00e7\u00e3o Premium'),
-    EmotionalStage(
-        title: 'Finaliza\u00e7\u00e3o',
-        emoji: '\u{1F487}\u200D\u2640\uFE0F',
-        description: 'Finaliza\u00e7\u00e3o e styling'),
-  ];
+  final _emojis = const ['😞', '😐', '🙂', '😊', '🤩'];
 
   @override
   Widget build(BuildContext context) {
+    final appointmentsAsync = ref.watch(completedAppointmentsProvider);
+
     return Scaffold(
       backgroundColor: SLColors.background,
       appBar: AppBar(
         title: Text(
-          'Minha Experi\u00eancia',
+          'Minha Experiência',
           style: SLTypography.h3.copyWith(
             color: SLColors.carbon,
             fontWeight: FontWeight.w400,
@@ -65,6 +38,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Last appointment before/after
             SLBeforeAfter(
               beforeImageUrl:
                   'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=400',
@@ -76,57 +50,137 @@ class _JourneyScreenState extends State<JourneyScreen> {
 
             const SizedBox(height: SLSpacing.xxl),
 
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: SLSpacing.xs, bottom: SLSpacing.md),
-              child: Row(
-                children: [
-                  Text('\u{1F4CB}',
-                      style: const TextStyle(fontSize: 18)),
-                  const SizedBox(width: SLSpacing.sm),
-                  Text(
-                    'Antes',
-                    style: SLTypography.h2.copyWith(
-                      color: SLColors.carbon,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+            // Appointments history with stages
+            appointmentsAsync.when(
+              loading: () => const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator(color: SLColors.champagne)),
               ),
+              error: (_, __) => const SizedBox.shrink(),
+              data: (appointments) {
+                if (appointments.isEmpty) return const SizedBox.shrink();
+
+                final lastAppointment = appointments.first;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: SLSpacing.xs, bottom: SLSpacing.md),
+                      child: Row(
+                        children: [
+                          const Text('📋', style: TextStyle(fontSize: 18)),
+                          const SizedBox(width: SLSpacing.sm),
+                          Text(
+                            'Última experiência',
+                            style: SLTypography.h2.copyWith(
+                              color: SLColors.carbon,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SLEmotionalTimeline(stages: [
+                      EmotionalStage(
+                          title: 'Confirmação',
+                          emoji: '✅',
+                          isCompleted: true),
+                      EmotionalStage(
+                          title: 'Inspirações',
+                          emoji: '📸',
+                          isCompleted: true),
+                      EmotionalStage(
+                          title: 'Lembrete',
+                          emoji: '🔔',
+                          isCompleted: true),
+                      EmotionalStage(
+                          title: 'Recepção',
+                          emoji: '👋',
+                          isCompleted: true),
+                      EmotionalStage(
+                          title: 'Diagnóstico',
+                          emoji: '🧑‍🏫',
+                          isCompleted: true),
+                      EmotionalStage(
+                          title: 'Procedimento',
+                          emoji: '✨',
+                          isCompleted: true),
+                      EmotionalStage(
+                          title: 'Finalização',
+                          emoji: '💇‍♀️',
+                          isCompleted: true),
+                    ]),
+
+                    const SizedBox(height: SLSpacing.xxl),
+
+                    // Service info
+                    Container(
+                      padding: const EdgeInsets.all(SLSpacing.md),
+                      decoration: BoxDecoration(
+                        color: SLColors.surface,
+                        borderRadius: SLRadius.card,
+                        border: Border.all(color: SLColors.border, width: 0.5),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: SLColors.cream,
+                            ),
+                            child: const Icon(Icons.spa_outlined,
+                                color: SLColors.champagne, size: 20),
+                          ),
+                          const SizedBox(width: SLSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  lastAppointment.service?.name ?? 'Serviço',
+                                  style: SLTypography.body.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: SLColors.carbon,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'com ${lastAppointment.professional?.name ?? 'Profissional'}',
+                                  style: SLTypography.caption.copyWith(
+                                    color: SLColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            'R\$ ${(lastAppointment.service?.price ?? 0).toInt()}',
+                            style: SLTypography.bodySmall.copyWith(
+                              color: SLColors.champagne,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-            SLEmotionalTimeline(stages: _beforeStages),
 
             const SizedBox(height: SLSpacing.xxl),
 
+            // Rating section
             Padding(
               padding: const EdgeInsets.only(
                   left: SLSpacing.xs, bottom: SLSpacing.md),
               child: Row(
                 children: [
-                  Text('\u2728',
-                      style: const TextStyle(fontSize: 18)),
-                  const SizedBox(width: SLSpacing.sm),
-                  Text(
-                    'Durante',
-                    style: SLTypography.h2.copyWith(
-                      color: SLColors.carbon,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SLEmotionalTimeline(stages: _duringStages),
-
-            const SizedBox(height: SLSpacing.xxl),
-
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: SLSpacing.xs, bottom: SLSpacing.md),
-              child: Row(
-                children: [
-                  Text('\u{1F49D}',
-                      style: const TextStyle(fontSize: 18)),
+                  const Text('💝', style: TextStyle(fontSize: 18)),
                   const SizedBox(width: SLSpacing.sm),
                   Text(
                     'Depois',
@@ -143,8 +197,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
               decoration: BoxDecoration(
                 color: SLColors.surface,
                 borderRadius: SLRadius.card,
-                border:
-                    Border.all(color: SLColors.border, width: 0.5),
+                border: Border.all(color: SLColors.border, width: 0.5),
                 boxShadow: [
                   BoxShadow(
                     color: SLColors.carbon.withValues(alpha: 0.03),
@@ -157,7 +210,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Como foi sua experi\u00eancia?',
+                    'Como foi sua experiência?',
                     style: SLTypography.h3.copyWith(
                       color: SLColors.carbon,
                       fontWeight: FontWeight.w400,
@@ -166,10 +219,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
                   const SizedBox(height: SLSpacing.lg),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      '\u{1F61E}', '\u{1F610}', '\u{1F642}',
-                      '\u{1F60A}', '\u{1F929}'
-                    ].asMap().entries.map((entry) {
+                    children: _emojis.asMap().entries.map((entry) {
                       final i = entry.key;
                       final emoji = entry.value;
                       final isSelected = _selectedRating == i + 1;
@@ -178,8 +228,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
                             setState(() => _selectedRating = i + 1),
                         child: AnimatedContainer(
                           duration: SLAnimations.normal,
-                          padding:
-                              const EdgeInsets.all(SLSpacing.sm),
+                          padding: const EdgeInsets.all(SLSpacing.sm),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: isSelected
@@ -193,8 +242,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
                             ),
                           ),
                           child: Text(emoji,
-                              style:
-                                  const TextStyle(fontSize: 28)),
+                              style: const TextStyle(fontSize: 28)),
                         ),
                       );
                     }).toList(),
@@ -213,8 +261,9 @@ class _JourneyScreenState extends State<JourneyScreen> {
                         ),
                       ),
                       child: ElevatedButton(
-                        onPressed:
-                            _selectedRating > 0 ? () {} : null,
+                        onPressed: _selectedRating > 0 && !_isSubmitting
+                            ? _submitRating
+                            : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
@@ -223,8 +272,16 @@ class _JourneyScreenState extends State<JourneyScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: SLRadius.button),
                         ),
-                        child:
-                            const Text('Registrar avalia\u00e7\u00e3o'),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(SLColors.textOnDark),
+                                ),
+                              )
+                            : const Text('Registrar avaliação'),
                       ),
                     ),
                   ),
@@ -236,5 +293,52 @@ class _JourneyScreenState extends State<JourneyScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _submitRating() async {
+    setState(() => _isSubmitting = true);
+
+    try {
+      final appointmentsAsync = ref.read(completedAppointmentsProvider);
+      final appointments = appointmentsAsync.valueOrNull ?? [];
+
+      if (appointments.isNotEmpty) {
+        final lastAppointment = appointments.first;
+
+        await Supabase.instance.client
+            .from('appointments')
+            .update({'rating': _selectedRating.toDouble()})
+            .eq('id', lastAppointment.id);
+
+        await Supabase.instance.client.from('customer_memories').insert({
+          'customer_id': Supabase.instance.client.auth.currentUser!.id,
+          'emoji': _emojis[_selectedRating - 1],
+          'message': 'Avaliação: ${_emojis[_selectedRating - 1]} (${_selectedRating}/5)',
+          'source': 'Auto-avaliação',
+          'type': 'rating',
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Avaliação registrada! Obrigada! 💛'),
+              backgroundColor: SLColors.success,
+            ),
+          );
+          setState(() => _selectedRating = 0);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao registrar: $e'),
+            backgroundColor: SLColors.error,
+          ),
+        );
+      }
+    } finally {
+      setState(() => _isSubmitting = false);
+    }
   }
 }

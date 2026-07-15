@@ -81,4 +81,18 @@ class SLTypography {
     height: 1.2,
     letterSpacing: 1,
   );
+
+  static TextStyle buttonMedium = GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    height: 1.2,
+    letterSpacing: 0.5,
+  );
+
+  static TextStyle buttonLarge = GoogleFonts.inter(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1.2,
+    letterSpacing: 1,
+  );
 }

@@ -13,7 +13,7 @@ class StudioLeticiaCustomerApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Studio Letícia',
       debugShowCheckedModeBanner: false,
-      theme: StudioTheme.light,
+      theme: StudioTheme.dark,
       routerConfig: router,
     );
   }

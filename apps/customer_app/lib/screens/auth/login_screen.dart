@@ -106,7 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w300,
-                          color: SLColors.carbon,
+                          color: SLColors.background,
                         ),
                       ),
                     ),
@@ -213,7 +213,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // TODO: Implement forgot password
+                        context.go('/auth/forgot-password');
                       },
                       child: Text(
                         'Esqueceu a senha?',
@@ -242,7 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.carbon,
+                          foregroundColor: SLColors.background,
                           shape: RoundedRectangleBorder(
                             borderRadius: SLRadius.button,
                           ),
@@ -254,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    SLColors.carbon,
+                                    SLColors.background,
                                   ),
                                 ),
                               )
@@ -262,6 +262,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 'Entrar',
                                 style: SLTypography.buttonLarge.copyWith(
                                   letterSpacing: 1,
+                                  color: SLColors.background,
                                 ),
                               ),
                       ),

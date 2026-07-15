@@ -300,7 +300,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.carbon,
+                          foregroundColor: SLColors.background,
                           shape: RoundedRectangleBorder(
                             borderRadius: SLRadius.button,
                           ),
@@ -312,7 +312,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    SLColors.carbon,
+                                    SLColors.background,
                                   ),
                                 ),
                               )

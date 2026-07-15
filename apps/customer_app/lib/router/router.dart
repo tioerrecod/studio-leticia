@@ -6,6 +6,7 @@ import '../screens/splash/splash_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
+import '../screens/auth/forgot_password_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/booking/services_screen.dart';
 import '../screens/booking/booking_screen.dart';
@@ -62,6 +63,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/signup',
         builder: (_, __) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: '/auth/forgot-password',
+        builder: (_, __) => const ForgotPasswordScreen(),
       ),
       StatefulShellRoute.indexedStack(
         parentNavigatorKey: _rootNavigatorKey,

@@ -7,15 +7,15 @@ void main() {
 
   group('SLColors', () {
     test('champagne has correct value', () {
-      expect(SLColors.champagne.toARGB32(), 0xFFD4A574);
+      expect(SLColors.champagne.toARGB32(), 0xFFD4A843);
     });
 
     test('carbon has correct value', () {
-      expect(SLColors.carbon.toARGB32(), 0xFF2C2C2C);
+      expect(SLColors.carbon.toARGB32(), 0xFFF5F0E8);
     });
 
     test('background has correct value', () {
-      expect(SLColors.background.toARGB32(), 0xFFFBF9F6);
+      expect(SLColors.background.toARGB32(), 0xFF000000);
     });
   });
 
@@ -53,6 +53,16 @@ void main() {
     test('light theme has correct brightness', () {
       final theme = StudioTheme.light;
       expect(theme.brightness, Brightness.light);
+    }, skip: 'Requires network access for google_fonts');
+
+    test('dark theme is not null', () {
+      final theme = StudioTheme.dark;
+      expect(theme, isNotNull);
+    }, skip: 'Requires network access for google_fonts');
+
+    test('dark theme has correct brightness', () {
+      final theme = StudioTheme.dark;
+      expect(theme.brightness, Brightness.dark);
     }, skip: 'Requires network access for google_fonts');
   });
 

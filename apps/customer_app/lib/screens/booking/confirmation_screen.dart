@@ -49,7 +49,7 @@ class ConfirmationScreen extends ConsumerWidget {
                     _ConfirmationRow(
                         icon: Icons.event_outlined,
                         label: 'DATA',
-                        value: _formatDate(DateTime.now())),
+                        value: _formatDate(_getNextBusinessDay())),
                     const SizedBox(height: SLSpacing.md),
                     Divider(color: SLColors.divider, height: 1),
                     const SizedBox(height: SLSpacing.md),
@@ -154,6 +154,14 @@ class ConfirmationScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  DateTime _getNextBusinessDay() {
+    var date = DateTime.now();
+    while (date.weekday == DateTime.saturday || date.weekday == DateTime.sunday) {
+      date = date.add(const Duration(days: 1));
+    }
+    return date;
   }
 
   String _formatDate(DateTime date) {

@@ -8,7 +8,7 @@ void main() {
         'id': '123',
         'name': 'Corte Feminino',
         'description': 'Corte moderno e estiloso',
-        'duration': 45,
+        'duration': '45 min',
         'price': 85.0,
         'category': 'Cabelo',
         'is_signature': true,
@@ -20,38 +20,37 @@ void main() {
       expect(service.id, '123');
       expect(service.name, 'Corte Feminino');
       expect(service.description, 'Corte moderno e estiloso');
-      expect(service.duration, 45);
+      expect(service.duration, '45 min');
       expect(service.price, 85.0);
       expect(service.category, 'Cabelo');
       expect(service.isSignature, true);
     });
 
     test('should format price correctly', () {
-      final service = ServiceItem(
+      const service = ServiceItem(
         id: '123',
         name: 'Corte Feminino',
-        description: 'Descrição',
-        duration: 45,
+        description: 'Descricao',
+        duration: '45 min',
         price: 85.0,
         category: 'Cabelo',
-        isSignature: false,
       );
 
-      expect(service.formattedPrice, 'R\$ 85,00');
+      expect(service.formattedPrice, 'R\$ 85');
     });
 
     test('should handle nullable fields', () {
       final json = {
         'id': '123',
         'name': 'Corte Feminino',
-        'duration': 45,
+        'description': 'Descricao',
+        'duration': '45 min',
         'price': 85.0,
         'category': 'Cabelo',
       };
 
       final service = ServiceItem.fromJson(json);
 
-      expect(service.description, isNull);
       expect(service.imageUrl, isNull);
       expect(service.isSignature, false);
     });
@@ -62,17 +61,18 @@ void main() {
       final json = {
         'id': '123',
         'name': 'Ana Silva',
-        'specialty': 'Cabeleireira',
+        'title': 'Cabeleireira',
         'avatar_url': 'https://example.com/avatar.jpg',
-        'is_active': true,
+        'specialties': ['Corte', 'Coloracao'],
+        'rating': 4.8,
       };
 
       final professional = Professional.fromJson(json);
 
       expect(professional.id, '123');
       expect(professional.name, 'Ana Silva');
-      expect(professional.specialty, 'Cabeleireira');
-      expect(professional.isActive, true);
+      expect(professional.title, 'Cabeleireira');
+      expect(professional.specialties, ['Corte', 'Coloracao']);
     });
   });
 }

@@ -29,7 +29,7 @@ class SLBeautyPassport extends StatelessWidget {
       padding: const EdgeInsets.all(SLSpacing.lg),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [SLColors.carbon, Color(0xFF3A3A3A)],
+          colors: [SLColors.surfaceVariant, Color(0xFF0D0D0D)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
