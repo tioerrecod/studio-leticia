@@ -1,0 +1,53 @@
+name: Deploy Customer App
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/customer_app/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-customer.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CUSTOMER_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: 'stable'
+
+      - name: Create .env
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          echo "SUPABASE_PROJECT_REF=${{ secrets.SUPABASE_PROJECT_REF }}" >> .env
+
+      - name: Install dependencies
+        run: cd apps/customer_app && flutter pub get
+
+      - name: Build Web
+        run: cd apps/customer_app && flutter build web --release --dart-define-from-file=../../.env
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Link to Vercel project
+        run: |
+          mkdir -p .vercel
+          echo "{\"projectId\":\"${{ secrets.VERCEL_CUSTOMER_PROJECT_ID }}\",\"orgId\":\"${{ secrets.VERCEL_ORG_ID }}\"}" > .vercel/project.json
+
+      - name: Add SPA rewrites for Flutter web
+        run: |
+          echo '{"framework":null,"outputDirectory":".","rewrites":[{"source":"/(.*)","destination":"/index.html"}]}' > ./apps/customer_app/build/web/vercel.json
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} ./apps/customer_app/build/web
