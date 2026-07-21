@@ -12,7 +12,7 @@ class ConfirmationScreen extends ConsumerWidget {
     final bookingState = ref.watch(bookingServiceProvider);
 
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(SLSpacing.xl),
@@ -38,7 +38,7 @@ class ConfirmationScreen extends ConsumerWidget {
                       Border.all(color: SLColors.border, width: 0.5),
                   boxShadow: [
                     BoxShadow(
-                      color: SLColors.carbon.withValues(alpha: 0.04),
+                      color: SLColors.textPrimary.withValues(alpha: 0.04),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -87,13 +87,13 @@ class ConfirmationScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(SLSpacing.md),
                 decoration: BoxDecoration(
-                  color: SLColors.cream,
+                  color: SLColors.bgSecondary,
                   borderRadius: SLRadius.input,
                 ),
                 child: Row(
                   children: [
                     const Icon(Icons.info_outline,
-                        size: 16, color: SLColors.sage),
+                        size: 16, color: SLColors.stateSuccess),
                     const SizedBox(width: SLSpacing.sm),
                     Expanded(
                       child: Text(
@@ -115,13 +115,13 @@ class ConfirmationScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     borderRadius: SLRadius.button,
                     gradient: const LinearGradient(
-                      colors: [SLColors.champagne, SLColors.gold],
+                      colors: [SLColors.accentGold, SLColors.accentGoldLight],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: SLColors.champagne.withValues(alpha: 0.25),
+                        color: SLColors.accentGold.withValues(alpha: 0.25),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -187,7 +187,7 @@ class _ConfirmationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: SLColors.champagne),
+        Icon(icon, size: 18, color: SLColors.accentGold),
         const SizedBox(width: SLSpacing.sm),
         Text(
           label,
@@ -198,7 +198,7 @@ class _ConfirmationRow extends StatelessWidget {
         Text(
           value,
           style: SLTypography.bodySmall.copyWith(
-              fontWeight: FontWeight.w600, color: SLColors.carbon),
+              fontWeight: FontWeight.w600, color: SLColors.textPrimary),
         ),
       ],
     );

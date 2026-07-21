@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:design_system/design_system.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -7,18 +8,9 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
-      appBar: AppBar(
-        title: Text(
-          'Configurações',
-          style: SLTypography.h3.copyWith(
-            color: SLColors.carbon,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
+      backgroundColor: SLColors.bgPrimary,
+      body: SafeArea(
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(SLSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,6 +56,12 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () {},
                 ),
                 _SettingsTile(
+                  icon: Icons.photo_library_outlined,
+                  title: 'Mídia dos Serviços',
+                  subtitle: 'Fotos e vídeos por serviço',
+                  onTap: () => context.push('/servicos'),
+                ),
+                _SettingsTile(
                   icon: Icons.people,
                   title: 'Profissionais',
                   subtitle: '6 profissionais ativos',
@@ -87,22 +85,9 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.qr_code,
                   title: 'Mercado Pago',
                   subtitle: 'Conectado',
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: SLSpacing.sm,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: SLColors.success.withValues(alpha: 0.1),
-                      borderRadius: SLRadius.chip,
-                    ),
-                    child: Text(
-                      'ATIVO',
-                      style: SLTypography.overline.copyWith(
-                        color: SLColors.success,
-                        fontSize: 9,
-                      ),
-                    ),
+                  trailing: SLBadge(
+                    variant: SLBadgeVariant.success,
+                    label: 'ATIVO',
                   ),
                   onTap: () {},
                 ),
@@ -110,22 +95,9 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.g_mobiledata,
                   title: 'Google Calendar',
                   subtitle: 'Não conectado',
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: SLSpacing.sm,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: SLColors.textDisabled.withValues(alpha: 0.2),
-                      borderRadius: SLRadius.chip,
-                    ),
-                    child: Text(
-                      'INATIVO',
-                      style: SLTypography.overline.copyWith(
-                        color: SLColors.textSecondary,
-                        fontSize: 9,
-                      ),
-                    ),
+                  trailing: SLBadge(
+                    variant: SLBadgeVariant.info,
+                    label: 'INATIVO',
                   ),
                   onTap: () {},
                 ),
@@ -211,6 +183,7 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -218,27 +191,22 @@ class SettingsScreen extends StatelessWidget {
 class _StudioInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(SLSpacing.lg),
-      decoration: BoxDecoration(
-        color: SLColors.surface,
-        borderRadius: SLRadius.card,
-        border: Border.all(color: SLColors.border, width: 0.5),
-      ),
+    return SLCard(
+      variant: SLCardVariant.outlined,
       child: Row(
         children: [
           Container(
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: SLColors.cream,
+              color: SLColors.bgSecondary,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 'SL',
                 style: SLTypography.h2.copyWith(
-                  color: SLColors.champagne,
+                  color: SLColors.accentGold,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -252,10 +220,10 @@ class _StudioInfoCard extends StatelessWidget {
                 Text(
                   'Studio Letícia',
                   style: SLTypography.h3.copyWith(
-                    color: SLColors.carbon,
+                    color: SLColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: SLSpacing.xs),
                 Text(
                   'Salão de Beleza Premium',
                   style: SLTypography.caption.copyWith(
@@ -266,12 +234,11 @@ class _StudioInfoCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(Icons.location_on_outlined, size: 12, color: SLColors.textDisabled),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: SLSpacing.xs),
                     Text(
                       'São Paulo, SP',
-                      style: SLTypography.overline.copyWith(
+                      style: SLTypography.caption.copyWith(
                         color: SLColors.textSecondary,
-                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -303,17 +270,13 @@ class _SettingsSection extends StatelessWidget {
         Text(
           title.toUpperCase(),
           style: SLTypography.overline.copyWith(
-            color: SLColors.champagne,
+            color: SLColors.accentGold,
             letterSpacing: 1.5,
           ),
         ),
         const SizedBox(height: SLSpacing.sm),
-        Container(
-          decoration: BoxDecoration(
-            color: SLColors.surface,
-            borderRadius: SLRadius.card,
-            border: Border.all(color: SLColors.border, width: 0.5),
-          ),
+        SLCard(
+          variant: SLCardVariant.outlined,
           child: Column(
             children: children,
           ),
@@ -350,7 +313,7 @@ class _SettingsTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: SLColors.champagne, size: 20),
+            Icon(icon, color: SLColors.accentGold, size: 20),
             const SizedBox(width: SLSpacing.md),
             Expanded(
               child: Column(
@@ -359,11 +322,11 @@ class _SettingsTile extends StatelessWidget {
                   Text(
                     title,
                     style: SLTypography.body.copyWith(
-                      color: SLColors.carbon,
+                      color: SLColors.textPrimary,
                     ),
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: SLSpacing.xs),
                     Text(
                       subtitle!,
                       style: SLTypography.caption.copyWith(
@@ -409,7 +372,7 @@ class _SettingsSwitch extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, color: SLColors.champagne, size: 20),
+          Icon(icon, color: SLColors.accentGold, size: 20),
           const SizedBox(width: SLSpacing.md),
           Expanded(
             child: Column(
@@ -418,10 +381,10 @@ class _SettingsSwitch extends StatelessWidget {
                 Text(
                   title,
                   style: SLTypography.body.copyWith(
-                    color: SLColors.carbon,
+                    color: SLColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: SLSpacing.xs),
                 Text(
                   subtitle,
                   style: SLTypography.caption.copyWith(
@@ -435,7 +398,7 @@ class _SettingsSwitch extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: SLColors.champagne,
+            activeThumbColor: SLColors.accentGold,
           ),
         ],
       ),

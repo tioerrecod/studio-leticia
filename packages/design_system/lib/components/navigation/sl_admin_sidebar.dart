@@ -10,6 +10,7 @@ enum SLAdminModule {
   customers,
   finances,
   marketing,
+  servicos,
   settings,
 }
 
@@ -43,7 +44,7 @@ class SLAdminSidebar extends StatelessWidget {
                 Text(
                   studioName,
                   style: SLTypography.h2.copyWith(
-                    color: SLColors.carbon,
+                    color: SLColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: SLSpacing.mini),
@@ -92,6 +93,12 @@ class SLAdminSidebar extends StatelessWidget {
                   onTap: () => onModuleSelected(SLAdminModule.marketing),
                 ),
                 _SidebarItem(
+                  icon: Icons.photo_library_outlined,
+                  label: 'Mídia',
+                  isSelected: currentModule == SLAdminModule.servicos,
+                  onTap: () => onModuleSelected(SLAdminModule.servicos),
+                ),
+                _SidebarItem(
                   icon: Icons.settings_outlined,
                   label: 'Configurações',
                   isSelected: currentModule == SLAdminModule.settings,
@@ -124,18 +131,18 @@ class _SidebarItem extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: isSelected ? SLColors.champagne : SLColors.textSecondary,
+        color: isSelected ? SLColors.accentGold : SLColors.textSecondary,
         size: 20,
       ),
       title: Text(
         label,
         style: SLTypography.body.copyWith(
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          color: isSelected ? SLColors.carbon : SLColors.textSecondary,
+          color: isSelected ? SLColors.textPrimary : SLColors.textSecondary,
         ),
       ),
       selected: isSelected,
-      selectedTileColor: SLColors.champagne.withValues(alpha: 0.1),
+      selectedTileColor: SLColors.accentGold.withValues(alpha: 0.1),
       shape: const RoundedRectangleBorder(
         borderRadius: SLRadius.input,
       ),

@@ -2,6 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core/core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+final serviceMediaRepositoryProvider = Provider<ServiceMediaRepository>((ref) {
+  return ServiceMediaRepository();
+});
+
 final serviceRepositoryProvider = Provider<ServiceRepository>((ref) {
   return ServiceRepository();
 });

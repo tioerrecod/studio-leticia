@@ -58,7 +58,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           backgroundColor: SLColors.success,
         ),
       );
-      context.go('/home');
+      context.go('/onboarding');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -72,12 +72,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: SLColors.carbon),
+          icon: const Icon(Icons.arrow_back_ios, color: SLColors.textPrimary),
           onPressed: () => context.go('/auth/login'),
         ),
       ),
@@ -95,7 +95,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Text(
                     'Criar Conta',
                     style: SLTypography.display.copyWith(
-                      color: SLColors.carbon,
+                      color: SLColors.textPrimary,
                       fontSize: 32,
                       fontWeight: FontWeight.w300,
                     ),
@@ -127,7 +127,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -159,7 +159,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -191,7 +191,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                   ),
@@ -225,7 +225,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -268,7 +268,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -290,7 +290,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       decoration: BoxDecoration(
                         borderRadius: SLRadius.button,
                         gradient: const LinearGradient(
-                          colors: [SLColors.champagne, SLColors.gold],
+                          colors: [SLColors.accentGold, SLColors.accentGoldLight],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                         ),
@@ -300,7 +300,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.background,
+                          foregroundColor: SLColors.bgPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: SLRadius.button,
                           ),
@@ -312,7 +312,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    SLColors.background,
+                                    SLColors.bgPrimary,
                                   ),
                                 ),
                               )
@@ -342,7 +342,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         child: Text(
                           'Entrar',
                           style: SLTypography.body.copyWith(
-                            color: SLColors.champagne,
+                            color: SLColors.accentGold,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

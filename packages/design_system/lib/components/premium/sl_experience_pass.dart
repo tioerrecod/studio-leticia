@@ -37,7 +37,7 @@ class SLExperiencePass extends StatelessWidget {
           border: Border.all(color: SLColors.border, width: 0.5),
           boxShadow: [
             BoxShadow(
-              color: SLColors.carbon.withValues(alpha: 0.04),
+              color: SLColors.textPrimary.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 2),
             ),
@@ -51,7 +51,7 @@ class SLExperiencePass extends StatelessWidget {
               height: 56,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [SLColors.champagne, SLColors.gold],
+                  colors: [SLColors.accentGold, SLColors.accentGoldLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -63,7 +63,7 @@ class SLExperiencePass extends StatelessWidget {
                   Text(
                     day,
                     style: SLTypography.h2.copyWith(
-                      color: SLColors.ivory,
+                      color: SLColors.bgPrimary,
                       fontWeight: FontWeight.w700,
                       height: 1,
                     ),
@@ -71,7 +71,7 @@ class SLExperiencePass extends StatelessWidget {
                   Text(
                     month.toUpperCase(),
                     style: SLTypography.caption.copyWith(
-                      color: SLColors.ivory,
+                      color: SLColors.bgPrimary,
                       letterSpacing: 1,
                     ),
                   ),
@@ -88,7 +88,7 @@ class SLExperiencePass extends StatelessWidget {
                     serviceName,
                     style: SLTypography.body.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: SLColors.carbon,
+                      color: SLColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),

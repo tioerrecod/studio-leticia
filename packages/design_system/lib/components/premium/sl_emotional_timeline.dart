@@ -47,15 +47,15 @@ class SLEmotionalTimeline extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: stage.isCompleted
-                        ? SLColors.champagne
+                        ? SLColors.accentGold
                         : stage.isActive
-                            ? SLColors.champagne.withValues(alpha: 0.2)
+                            ? SLColors.accentGold.withValues(alpha: 0.2)
                             : SLColors.surface,
                     border: Border.all(
                       color: stage.isCompleted
-                          ? SLColors.champagne
+                          ? SLColors.accentGold
                           : stage.isActive
-                              ? SLColors.champagne
+                              ? SLColors.accentGold
                               : SLColors.border,
                       width: stage.isActive ? 2 : 1,
                     ),
@@ -94,7 +94,7 @@ class SLEmotionalTimeline extends StatelessWidget {
                         fontWeight: stage.isActive
                             ? FontWeight.w600
                             : FontWeight.w400,
-                        color: SLColors.carbon,
+                        color: SLColors.textPrimary,
                       ),
                     ),
                     if (stage.description != null) ...[

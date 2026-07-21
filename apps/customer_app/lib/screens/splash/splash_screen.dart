@@ -12,9 +12,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _fadeIn;
-  late final Animation<double> _scaleIn;
-  late final Animation<Offset> _slideUp;
+  late final Animation<double> _photoFade;
+  late final Animation<double> _contentFade;
+  late final Animation<double> _ctaFade;
+  late final Animation<double> _monogramFade;
 
   @override
   void initState() {
@@ -25,35 +26,35 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2200),
     );
 
-    _fadeIn = Tween<double>(begin: 0, end: 1).animate(
+    _photoFade = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.1, 0.5, curve: Curves.easeOut),
+        curve: const Interval(0, 0.6, curve: Curves.easeOut),
       ),
     );
 
-    _scaleIn = Tween<double>(begin: 0.92, end: 1.0).animate(
+    _contentFade = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0, 0.5, curve: Curves.easeOut),
+        curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
       ),
     );
 
-    _slideUp = Tween<Offset>(
-      begin: const Offset(0, 20),
-      end: Offset.zero,
-    ).animate(
+    _ctaFade = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic),
+        curve: const Interval(0.5, 0.9, curve: Curves.easeOut),
+      ),
+    );
+
+    _monogramFade = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.7, 1.0, curve: Curves.easeOut),
       ),
     );
 
     _controller.forward();
-
-    Future.delayed(const Duration(milliseconds: 2800), () {
-      if (mounted) context.go('/onboarding');
-    });
   }
 
   @override
@@ -64,111 +65,160 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final safeTop = MediaQuery.of(context).padding.top;
+    final heroHeight = (height - safeTop) * 0.75;
+
     return Scaffold(
-      backgroundColor: SLColors.background,
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeIn,
-          child: ScaleTransition(
-            scale: _scaleIn,
-            child: SlideTransition(
-              position: _slideUp,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Gold circle emblem
-                  Container(
-                    width: 88,
-                    height: 88,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [SLColors.champagne, SLColors.gold],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: SLColors.champagne.withValues(alpha: 0.3),
-                          blurRadius: 24,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.spa_outlined, size: 40, color: SLColors.background),
+      backgroundColor: SLColors.bgInverse,
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (_, __) => Stack(
+          children: [
+            // ── Hero Photo ──────────────────────────────
+            Positioned(
+              top: safeTop,
+              left: 0,
+              right: 0,
+              height: heroHeight,
+              child: FadeTransition(
+                opacity: _photoFade,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF2A2420), Color(0xFF1C1815)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                   ),
-                  const SizedBox(height: SLSpacing.xxl),
-                  // "Studio" in light weight
-                  Text(
-                    'Studio',
-                    style: SLTypography.display.copyWith(
-                      color: SLColors.carbon,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 4,
+                  child: Center(
+                    child: Icon(
+                      Icons.woman_rounded,
+                      size: 180,
+                      color: SLColors.accentGold.withValues(alpha: 0.15),
                     ),
                   ),
-                  const SizedBox(height: SLSpacing.xs),
-                  // "Letícia" in elegant medium weight
-                  Text(
-                    'Letícia',
-                    style: SLTypography.display.copyWith(
-                      color: SLColors.carbon,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 6,
-                    ),
-                  ),
-                  const SizedBox(height: SLSpacing.lg),
-                  // Thin gold divider
-                  Container(
-                    width: 40,
-                    height: 1,
-                    color: SLColors.champagne,
-                  ),
-                  const SizedBox(height: SLSpacing.lg),
-                  // Tagline
-                  Text(
-                    'SUA BELEZA, NOSSA HISTÓRIA',
-                    style: SLTypography.overline.copyWith(
-                      color: SLColors.champagne,
-                      letterSpacing: 5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const SizedBox(height: SLSpacing.xxl),
-
-                  // Loading dots
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (i) {
-                      return AnimatedBuilder(
-                        animation: _controller,
-                        builder: (_, __) {
-                          final delay = 0.2 + (i * 0.15);
-                          final opacity = _controller.value > delay
-                              ? ((_controller.value - delay) / 0.3).clamp(0.0, 1.0)
-                              : 0.0;
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 3),
-                            width: 4,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: SLColors.champagne.withValues(alpha: opacity * 0.6),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+
+            // ── Gradient Overlay ─────────────────────────
+            Positioned(
+              top: safeTop,
+              left: 0,
+              right: 0,
+              height: heroHeight,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.transparent,
+                        SLColors.bgInverse.withValues(alpha: 0.3),
+                        SLColors.bgInverse.withValues(alpha: 0.85),
+                        SLColors.bgInverse,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // ── Logo + Text Content ──────────────────────
+            Positioned(
+              left: 28,
+              right: 28,
+              top: safeTop + heroHeight * 0.42,
+              child: FadeTransition(
+                opacity: _contentFade,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Studio Letícia',
+                      style: SLTypography.display.copyWith(
+                        fontSize: 42,
+                        height: 1.1,
+                        color: SLColors.textInverse,
+                        fontWeight: FontWeight.w300,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2, top: 6),
+                      child: Text(
+                        'EXPERIENCE',
+                        style: SLTypography.label.copyWith(
+                          color: SLColors.accentGold,
+                          fontSize: 11,
+                          letterSpacing: 8,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'BELEZA QUE TRANSFORMA.\nEXPERIÊNCIAS QUE MARCAM.',
+                      style: SLTypography.body.copyWith(
+                        color: SLColors.textInverse.withValues(alpha: 0.8),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Bem-vinda ao seu novo jeito de viver\na beleza como uma experiência exclusiva.',
+                      style: SLTypography.caption.copyWith(
+                        color: SLColors.textInverse.withValues(alpha: 0.5),
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── CTA Button ──────────────────────────────
+            Positioned(
+              left: 28,
+              right: 28,
+              top: safeTop + heroHeight + 24,
+              child: FadeTransition(
+                opacity: _ctaFade,
+                child: SLButton(
+                  label: 'AGENDAR EXPERIÊNCIA',
+                  onPressed: () => context.go('/auth-choice'),
+                  height: 56,
+                  icon: Icons.arrow_forward,
+                ),
+              ),
+            ),
+
+            // ── Monogram ────────────────────────────────
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+              child: FadeTransition(
+                opacity: _monogramFade,
+                child: Text(
+                  'SL',
+                  textAlign: TextAlign.center,
+                  style: SLTypography.label.copyWith(
+                    color: SLColors.textInverse.withValues(alpha: 0.25),
+                    fontSize: 14,
+                    letterSpacing: 6,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

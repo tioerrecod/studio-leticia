@@ -41,15 +41,15 @@ INSERT INTO tenant_features (tenant_id, key, name, is_enabled) VALUES
 ON CONFLICT (tenant_id, key) DO NOTHING;
 
 -- ============================================================
--- CATEGORIAS DE SERVIÇO
+-- CATEGORIAS DE SERVIÇO — Studio Letícia (tranças, mega hair, penteados)
 -- ============================================================
 INSERT INTO service_categories (tenant_id, name, icon, sort_order) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Cortes', 'content_cut', 1),
-  ('00000000-0000-0000-0000-000000000001', 'Coloração', 'palette', 2),
-  ('00000000-0000-0000-0000-000000000001', 'Tratamentos', 'spa', 3),
-  ('00000000-0000-0000-0000-000000000001', 'Manicure & Pedicure', 'pan_tool', 4),
-  ('00000000-0000-0000-0000-000000000001', 'Maquiagem', 'face', 5),
-  ('00000000-0000-0000-0000-000000000001', 'Depilação', 'wave', 6)
+  ('00000000-0000-0000-0000-000000000001', 'Tranças', 'spa', 1),
+  ('00000000-0000-0000-0000-000000000001', 'Mega Hair', 'content_cut', 2),
+  ('00000000-0000-0000-0000-000000000001', 'Penteados', 'face', 3),
+  ('00000000-0000-0000-0000-000000000001', 'Noivas', 'favorite', 4),
+  ('00000000-0000-0000-0000-000000000001', 'Infantil', 'child_care', 5),
+  ('00000000-0000-0000-0000-000000000001', 'Cursos', 'school', 6)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
@@ -57,24 +57,43 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 DO $$
 DECLARE
-  v_cat_cortes UUID;
-  v_cat_coloracao UUID;
-  v_cat_tratamentos UUID;
-  v_cat_manicure UUID;
+  v_cat_trancas UUID;
+  v_cat_mega UUID;
+  v_cat_penteados UUID;
+  v_cat_noivas UUID;
+  v_cat_infantil UUID;
+  v_cat_cursos UUID;
 BEGIN
-  SELECT id INTO v_cat_cortes FROM service_categories WHERE name = 'Cortes' AND tenant_id = '00000000-0000-0000-0000-000000000001';
-  SELECT id INTO v_cat_coloracao FROM service_categories WHERE name = 'Coloração' AND tenant_id = '00000000-0000-0000-0000-000000000001';
-  SELECT id INTO v_cat_tratamentos FROM service_categories WHERE name = 'Tratamentos' AND tenant_id = '00000000-0000-0000-0000-000000000001';
-  SELECT id INTO v_cat_manicure FROM service_categories WHERE name = 'Manicure & Pedicure' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  SELECT id INTO v_cat_trancas FROM service_categories WHERE name = 'Tranças' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  SELECT id INTO v_cat_mega FROM service_categories WHERE name = 'Mega Hair' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  SELECT id INTO v_cat_penteados FROM service_categories WHERE name = 'Penteados' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  SELECT id INTO v_cat_noivas FROM service_categories WHERE name = 'Noivas' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  SELECT id INTO v_cat_infantil FROM service_categories WHERE name = 'Infantil' AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  SELECT id INTO v_cat_cursos FROM service_categories WHERE name = 'Cursos' AND tenant_id = '00000000-0000-0000-0000-000000000001';
 
   INSERT INTO services (tenant_id, category_id, name, duration, price, commission_percentage, is_signature, sort_order) VALUES
-    ('00000000-0000-0000-0000-000000000001', v_cat_cortes, 'Corte Feminino', 45, 80.00, 50.00, true, 1),
-    ('00000000-0000-0000-0000-000000000001', v_cat_cortes, 'Corte Masculino', 30, 50.00, 50.00, false, 2),
-    ('00000000-0000-0000-0000-000000000001', v_cat_coloracao, 'Escova Progressiva', 120, 200.00, 40.00, true, 3),
-    ('00000000-0000-0000-0000-000000000001', v_cat_coloracao, 'Mechas', 150, 250.00, 40.00, true, 4),
-    ('00000000-0000-0000-0000-000000000001', v_cat_tratamentos, 'Hidratação', 40, 60.00, 50.00, false, 5),
-    ('00000000-0000-0000-0000-000000000001', v_cat_manicure, 'Manicure', 30, 35.00, 50.00, false, 6),
-    ('00000000-0000-0000-0000-000000000001', v_cat_manicure, 'Pedicure', 30, 35.00, 50.00, false, 7)
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Box Braids', 180, 280.00, 50.00, true, 1),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Boho Braids', 210, 320.00, 50.00, true, 2),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Twist', 150, 220.00, 50.00, false, 3),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Nagô', 120, 180.00, 50.00, false, 4),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Fulani Braids', 200, 300.00, 50.00, false, 5),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Goddess Braids', 190, 290.00, 50.00, false, 6),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Rasteira', 100, 150.00, 50.00, false, 7),
+    ('00000000-0000-0000-0000-000000000001', v_cat_trancas, 'Lace Braids', 220, 350.00, 50.00, true, 8),
+    ('00000000-0000-0000-0000-000000000001', v_cat_mega, 'Aplicação Mega Hair', 240, 600.00, 40.00, true, 1),
+    ('00000000-0000-0000-0000-000000000001', v_cat_mega, 'Manutenção Mega Hair', 120, 250.00, 40.00, false, 2),
+    ('00000000-0000-0000-0000-000000000001', v_cat_mega, 'Remoção Mega Hair', 60, 100.00, 40.00, false, 3),
+    ('00000000-0000-0000-0000-000000000001', v_cat_penteados, 'Penteado Social', 60, 120.00, 50.00, false, 1),
+    ('00000000-0000-0000-0000-000000000001', v_cat_penteados, 'Penteado Festa', 90, 180.00, 50.00, false, 2),
+    ('00000000-0000-0000-0000-000000000001', v_cat_penteados, 'Penteado Debutante', 120, 250.00, 50.00, false, 3),
+    ('00000000-0000-0000-0000-000000000001', v_cat_noivas, 'Prova de Penteado', 90, 200.00, 50.00, true, 1),
+    ('00000000-0000-0000-0000-000000000001', v_cat_noivas, 'Penteado Noiva', 180, 500.00, 50.00, true, 2),
+    ('00000000-0000-0000-0000-000000000001', v_cat_noivas, 'Produção Completa Noiva', 300, 1200.00, 50.00, true, 3),
+    ('00000000-0000-0000-0000-000000000001', v_cat_infantil, 'Tranças Infantil', 90, 100.00, 50.00, false, 1),
+    ('00000000-0000-0000-0000-000000000001', v_cat_infantil, 'Penteado Infantil', 45, 70.00, 50.00, false, 2),
+    ('00000000-0000-0000-0000-000000000001', v_cat_cursos, 'Curso de Tranças', 480, 600.00, 0, true, 1),
+    ('00000000-0000-0000-0000-000000000001', v_cat_cursos, 'Curso de Mega Hair', 360, 800.00, 0, true, 2),
+    ('00000000-0000-0000-0000-000000000001', v_cat_cursos, 'Curso de Penteados', 300, 500.00, 0, false, 3)
   ON CONFLICT DO NOTHING;
 END $$;
 

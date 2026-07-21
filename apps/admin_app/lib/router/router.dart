@@ -5,10 +5,13 @@ import 'package:core/core.dart';
 import '../screens/login/admin_login_screen.dart';
 import '../screens/dashboard/dashboard_screen.dart';
 import '../screens/agenda/agenda_screen.dart';
+import '../screens/agenda/agenda_list_screen.dart';
+import '../screens/agenda/appointment_detail_screen.dart';
 import '../screens/crm/crm_screen.dart';
 import '../screens/financial/financial_screen.dart';
 import '../screens/marketing/marketing_screen.dart';
 import '../screens/settings/settings_screen.dart';
+import '../screens/servicos/service_media_screen.dart';
 import '../screens/admin_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -39,7 +42,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const AdminLoginScreen(),
       ),
       StatefulShellRoute.indexedStack(
-        builder: (_, __, navigationShell) => AdminShell(navigationShell: navigationShell),
+        builder: (_, __, navigationShell) =>
+            AdminShell(navigationShell: navigationShell),
         branches: [
           StatefulShellBranch(routes: [
             GoRoute(
@@ -51,6 +55,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: '/agenda',
               builder: (_, __) => const AgendaScreen(),
+              routes: [
+                GoRoute(
+                  path: 'completa',
+                  parentNavigatorKey: _rootNavigatorKey,
+                  builder: (_, __) => const AgendaListScreen(),
+                ),
+                GoRoute(
+                  path: 'detalhes/:id',
+                  parentNavigatorKey: _rootNavigatorKey,
+                  builder: (_, state) => AppointmentDetailScreen(
+                    appointmentId: state.pathParameters['id']!,
+                  ),
+                ),
+              ],
             ),
           ]),
           StatefulShellBranch(routes: [
@@ -69,6 +87,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: '/marketing',
               builder: (_, __) => const MarketingScreen(),
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/servicos',
+              builder: (_, __) => const ServiceMediaScreen(),
             ),
           ]),
           StatefulShellBranch(routes: [

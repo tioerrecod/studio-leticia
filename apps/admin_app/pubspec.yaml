@@ -16,6 +16,7 @@ dependencies:
   go_router: ^13.0.0
   flutter_riverpod: ^2.4.9
   supabase_flutter: ^2.5.0
+  file_picker: ^8.0.0
 
 dev_dependencies:
   flutter_test:

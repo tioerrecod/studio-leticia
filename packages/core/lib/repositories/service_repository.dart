@@ -8,11 +8,13 @@ class ServiceRepository {
     try {
       final response = await _supabase
           .from('services')
-          .select()
+          .select('*, category:category_id(name)')
+          .eq('is_active', true)
+          .order('sort_order')
           .order('name');
 
       return (response as List)
-          .map((json) => ServiceItem.fromJson(json))
+          .map((json) => ServiceItem.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw ServiceException('Erro ao buscar serviços: $e');
@@ -23,7 +25,7 @@ class ServiceRepository {
     try {
       final response = await _supabase
           .from('services')
-          .select()
+          .select('*, category:category_id(name)')
           .eq('id', id)
           .single();
 
@@ -33,16 +35,18 @@ class ServiceRepository {
     }
   }
 
-  Future<List<ServiceItem>> getServicesByCategory(String category) async {
+  Future<List<ServiceItem>> getServicesByCategory(String categoryName) async {
     try {
       final response = await _supabase
           .from('services')
-          .select()
-          .eq('category', category)
+          .select('*, category:category_id!inner(name)')
+          .eq('category.name', categoryName)
+          .eq('is_active', true)
+          .order('sort_order')
           .order('name');
 
       return (response as List)
-          .map((json) => ServiceItem.fromJson(json))
+          .map((json) => ServiceItem.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw ServiceException('Erro ao buscar serviços por categoria: $e');
@@ -53,12 +57,14 @@ class ServiceRepository {
     try {
       final response = await _supabase
           .from('services')
-          .select()
+          .select('*, category:category_id(name)')
           .eq('is_signature', true)
+          .eq('is_active', true)
+          .order('sort_order')
           .order('name');
 
       return (response as List)
-          .map((json) => ServiceItem.fromJson(json))
+          .map((json) => ServiceItem.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw ServiceException('Erro ao buscar serviços exclusivos: $e');
@@ -69,8 +75,8 @@ class ServiceRepository {
     try {
       final response = await _supabase
           .from('services')
-          .insert(service.toJson())
-          .select()
+          .insert(service.toDatabaseJson())
+          .select('*, category:category_id(name)')
           .single();
 
       return ServiceItem.fromJson(response);
@@ -83,9 +89,9 @@ class ServiceRepository {
     try {
       final response = await _supabase
           .from('services')
-          .update(service.toJson())
+          .update(service.toDatabaseJson())
           .eq('id', service.id)
-          .select()
+          .select('*, category:category_id(name)')
           .single();
 
       return ServiceItem.fromJson(response);

@@ -36,7 +36,7 @@ class SLBeautyPassport extends StatelessWidget {
         borderRadius: SLRadius.card,
         boxShadow: [
           BoxShadow(
-            color: SLColors.carbon.withValues(alpha: 0.15),
+            color: SLColors.textPrimary.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -51,7 +51,7 @@ class SLBeautyPassport extends StatelessWidget {
               Text(
                 'BEAUTY PASSPORT',
                 style: SLTypography.overline.copyWith(
-                  color: SLColors.champagne,
+                  color: SLColors.accentGold,
                   letterSpacing: 3,
                 ),
               ),
@@ -61,13 +61,13 @@ class SLBeautyPassport extends StatelessWidget {
                   vertical: SLSpacing.mini,
                 ),
                 decoration: BoxDecoration(
-                  color: SLColors.champagne.withValues(alpha: 0.15),
+                  color: SLColors.accentGold.withValues(alpha: 0.15),
                   borderRadius: SLRadius.chip,
                 ),
                 child: Text(
                   tierName,
                   style: SLTypography.overline.copyWith(
-                    color: SLColors.champagne,
+                    color: SLColors.accentGold,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -78,7 +78,7 @@ class SLBeautyPassport extends StatelessWidget {
           Text(
             name,
             style: SLTypography.h1.copyWith(
-              color: SLColors.ivory,
+              color: SLColors.bgPrimary,
               fontWeight: FontWeight.w300,
             ),
           ),
@@ -122,8 +122,8 @@ class SLBeautyPassport extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
                 child: LinearProgressIndicator(
                   value: points / (points + pointsToNext),
-                  backgroundColor: SLColors.champagne.withValues(alpha: 0.15),
-                  valueColor: const AlwaysStoppedAnimation<Color>(SLColors.champagne),
+                  backgroundColor: SLColors.accentGold.withValues(alpha: 0.15),
+                  valueColor: const AlwaysStoppedAnimation<Color>(SLColors.accentGold),
                   minHeight: 4,
                 ),
               ),
@@ -152,7 +152,7 @@ class _PassportStat extends StatelessWidget {
         Text(
           value,
           style: SLTypography.h3.copyWith(
-            color: SLColors.ivory,
+            color: SLColors.bgPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),

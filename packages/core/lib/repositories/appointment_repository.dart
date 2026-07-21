@@ -1,14 +1,34 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/appointment.dart';
 
+/// Relationship map (DB schema):
+///   appointments
+///     ├── appointment_services  (junction: appointment_id → appointments.id)
+///     │     └── services        (FK: service_id → services.id)
+///     ├── professionals         (FK: professional_id → professionals.id)
+///     └── customers             (FK: customer_id → customers.id)
 class AppointmentRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  Future<List<Appointment>> getAppointments({String? customerId, String? status}) async {
+  static const _selectQuery = '''
+    *,
+    appointment_services(
+      *,
+      service:service_id(*)
+    ),
+    professional:professionals(*)
+  ''';
+
+  Future<List<Appointment>> getAppointments({
+    String? customerId,
+    String? status,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
       var query = _supabase
           .from('appointments')
-          .select('*, service:services(*), professional:professionals(*)');
+          .select(_selectQuery);
 
       if (customerId != null) {
         query = query.eq('customer_id', customerId);
@@ -16,46 +36,60 @@ class AppointmentRepository {
       if (status != null) {
         query = query.eq('status', status);
       }
+      if (startDate != null) {
+        query = query.gte('start_at', startDate.toIso8601String());
+      }
+      if (endDate != null) {
+        query = query.lte('start_at', endDate.toIso8601String());
+      }
 
-      final response = await query.order('date_time', ascending: false);
+      final response = await query.order('start_at', ascending: false);
 
       return (response as List)
-          .map((json) => Appointment.fromJson(json))
+          .map((json) => Appointment.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw AppointmentException('Erro ao buscar agendamentos: $e');
     }
   }
 
-  Future<List<Appointment>> getUpcomingAppointments({required String customerId}) async {
+  Future<List<Appointment>> getUpcomingAppointments({
+    required String customerId,
+    int limit = 10,
+  }) async {
     try {
       final response = await _supabase
           .from('appointments')
-          .select('*, service:services(*), professional:professionals(*)')
+          .select(_selectQuery)
           .eq('customer_id', customerId)
           .inFilter('status', ['scheduled', 'confirmed'])
-          .gte('date_time', DateTime.now().toIso8601String())
-          .order('date_time');
+          .gte('start_at', DateTime.now().toIso8601String())
+          .order('start_at')
+          .limit(limit);
 
       return (response as List)
-          .map((json) => Appointment.fromJson(json))
+          .map((json) => Appointment.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw AppointmentException('Erro ao buscar próximos agendamentos: $e');
     }
   }
 
-  Future<List<Appointment>> getCompletedAppointments({required String customerId}) async {
+  Future<List<Appointment>> getCompletedAppointments({
+    required String customerId,
+    int limit = 20,
+  }) async {
     try {
       final response = await _supabase
           .from('appointments')
-          .select('*, service:services(*), professional:professionals(*)')
+          .select(_selectQuery)
           .eq('customer_id', customerId)
           .eq('status', 'completed')
-          .order('date_time', ascending: false);
+          .order('start_at', ascending: false)
+          .limit(limit);
 
       return (response as List)
-          .map((json) => Appointment.fromJson(json))
+          .map((json) => Appointment.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw AppointmentException('Erro ao buscar histórico: $e');
@@ -64,20 +98,17 @@ class AppointmentRepository {
 
   Future<Appointment> createAppointment(Appointment appointment) async {
     try {
-      final serviceId = appointment.service?.id;
-      final professionalId = appointment.professional?.id;
-      final dateTimeStr = appointment.dateTime?.toIso8601String() ?? appointment.startAt.toIso8601String();
+      final professionalId = appointment.professional?.id ?? appointment.professionalId;
 
-      if (serviceId == null || professionalId == null) {
-        throw AppointmentException('Serviço e profissional são obrigatórios');
+      if (professionalId.isEmpty) {
+        throw AppointmentException('Profissional é obrigatório');
       }
 
       final response = await _supabase.functions.invoke(
         'create-appointment',
         body: {
-          'serviceId': serviceId,
           'professionalId': professionalId,
-          'dateTime': dateTimeStr,
+          'dateTime': appointment.startAt.toIso8601String(),
           'notes': appointment.notes,
         },
       );
@@ -95,7 +126,12 @@ class AppointmentRepository {
     }
   }
 
-  Future<Appointment> updateAppointment(String id, {String? status, double? rating, String? feedback}) async {
+  Future<Appointment> updateAppointment(
+    String id, {
+    String? status,
+    double? rating,
+    String? feedback,
+  }) async {
     try {
       final updates = <String, dynamic>{};
       if (status != null) updates['status'] = status;
@@ -107,7 +143,7 @@ class AppointmentRepository {
           .from('appointments')
           .update(updates)
           .eq('id', id)
-          .select('*, service:services(*), professional:professionals(*)')
+          .select(_selectQuery)
           .single();
 
       return Appointment.fromJson(response);

@@ -77,7 +77,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -95,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [SLColors.champagne, SLColors.gold],
+                        colors: [SLColors.accentGold, SLColors.accentGoldLight],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -106,7 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w300,
-                          color: SLColors.background,
+                          color: SLColors.bgPrimary,
                         ),
                       ),
                     ),
@@ -117,7 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text(
                     'Bem-vinda',
                     style: SLTypography.display.copyWith(
-                      color: SLColors.carbon,
+                      color: SLColors.textPrimary,
                       fontSize: 32,
                       fontWeight: FontWeight.w300,
                     ),
@@ -150,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -193,7 +193,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -218,7 +218,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Text(
                         'Esqueceu a senha?',
                         style: SLTypography.caption.copyWith(
-                          color: SLColors.champagne,
+                          color: SLColors.accentGold,
                         ),
                       ),
                     ),
@@ -232,7 +232,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       decoration: BoxDecoration(
                         borderRadius: SLRadius.button,
                         gradient: const LinearGradient(
-                          colors: [SLColors.champagne, SLColors.gold],
+                          colors: [SLColors.accentGold, SLColors.accentGoldLight],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                         ),
@@ -242,7 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.background,
+                          foregroundColor: SLColors.bgPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: SLRadius.button,
                           ),
@@ -254,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    SLColors.background,
+                                    SLColors.bgPrimary,
                                   ),
                                 ),
                               )
@@ -262,7 +262,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 'Entrar',
                                 style: SLTypography.buttonLarge.copyWith(
                                   letterSpacing: 1,
-                                  color: SLColors.background,
+                                  color: SLColors.bgPrimary,
                                 ),
                               ),
                       ),
@@ -303,7 +303,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       label: Text(
                         'Continuar com Google',
                         style: SLTypography.buttonMedium.copyWith(
-                          color: SLColors.carbon,
+                          color: SLColors.textPrimary,
                         ),
                       ),
                     ),
@@ -325,7 +325,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Text(
                           'Cadastre-se',
                           style: SLTypography.body.copyWith(
-                            color: SLColors.champagne,
+                            color: SLColors.accentGold,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

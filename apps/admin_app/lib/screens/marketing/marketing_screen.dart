@@ -7,18 +7,9 @@ class MarketingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
-      appBar: AppBar(
-        title: Text(
-          'Marketing',
-          style: SLTypography.h3.copyWith(
-            color: SLColors.carbon,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: ListView(
+      backgroundColor: SLColors.bgPrimary,
+      body: SafeArea(
+        child: ListView(
         padding: const EdgeInsets.all(SLSpacing.md),
         children: [
           _CampaignCard(
@@ -44,6 +35,7 @@ class MarketingScreen extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -65,14 +57,11 @@ class _CampaignCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: SLSpacing.sm),
-      padding: const EdgeInsets.all(SLSpacing.lg),
-      decoration: BoxDecoration(
-        color: SLColors.surface,
-        borderRadius: SLRadius.card,
-        border: Border.all(color: SLColors.border, width: 0.5),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: SLSpacing.sm),
+      child: SLCard(
+        variant: SLCardVariant.outlined,
+        padding: const EdgeInsets.all(SLSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -83,33 +72,16 @@ class _CampaignCard extends StatelessWidget {
                 title,
                 style: SLTypography.body.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: SLColors.carbon,
+                  color: SLColors.textPrimary,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: SLSpacing.sm,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: status == 'Ativo'
-                      ? SLColors.success.withValues(alpha: 0.1)
-                      : status == 'Programado'
-                          ? SLColors.info.withValues(alpha: 0.1)
-                          : SLColors.divider.withValues(alpha: 0.3),
-                  borderRadius: SLRadius.chip,
-                ),
-                child: Text(
-                  status,
-                  style: SLTypography.caption.copyWith(
-                    color: status == 'Ativo'
-                        ? SLColors.success
-                        : status == 'Programado'
-                            ? SLColors.info
-                            : SLColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              SLBadge(
+                variant: status == 'Ativo'
+                    ? SLBadgeVariant.success
+                    : status == 'Programado'
+                        ? SLBadgeVariant.info
+                        : SLBadgeVariant.warning,
+                label: status,
               ),
             ],
           ),
@@ -128,6 +100,7 @@ class _CampaignCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -145,7 +118,7 @@ class _CampStat extends StatelessWidget {
       children: [
         Text(
           value,
-          style: SLTypography.h3.copyWith(color: SLColors.carbon),
+          style: SLTypography.h3.copyWith(color: SLColors.textPrimary),
         ),
         Text(
           label,

@@ -75,13 +75,13 @@ class _SLSuccessAnimationState extends State<SLSuccessAnimation>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [SLColors.champagne, SLColors.gold],
+                colors: [SLColors.accentGold, SLColors.accentGoldLight],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: SLColors.champagne.withValues(alpha: 0.3),
+                  color: SLColors.accentGold.withValues(alpha: 0.3),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -90,7 +90,7 @@ class _SLSuccessAnimationState extends State<SLSuccessAnimation>
             child: const Center(
               child: Icon(
                 Icons.check,
-                color: SLColors.background,
+                color: SLColors.bgPrimary,
                 size: 40,
               ),
             ),
@@ -103,7 +103,7 @@ class _SLSuccessAnimationState extends State<SLSuccessAnimation>
           child: Text(
             widget.title,
             style: SLTypography.h2.copyWith(
-              color: SLColors.carbon,
+              color: SLColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,

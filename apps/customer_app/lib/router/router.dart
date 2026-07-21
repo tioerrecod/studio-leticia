@@ -4,15 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:core/core.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
+import '../screens/auth/auth_choice_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
 import '../screens/auth/forgot_password_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/booking/services_screen.dart';
+import '../screens/booking/service_detail_screen.dart';
+import '../screens/booking/category_services_screen.dart';
 import '../screens/booking/booking_screen.dart';
 import '../screens/booking/confirmation_screen.dart';
-import '../screens/history/history_screen.dart';
+import '../screens/courses/courses_screen.dart';
 import '../screens/journey/journey_screen.dart';
+import '../screens/history/history_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/home/home_shell.dart';
 
@@ -26,22 +30,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/splash',
     redirect: (context, state) {
       final isAuthenticated = authService.isAuthenticated;
-      final isOnAuthRoute = state.matchedLocation.startsWith('/auth');
-      final isOnSplash = state.matchedLocation == '/splash';
-      final isOnOnboarding = state.matchedLocation == '/onboarding';
+      final location = state.matchedLocation;
+      final isProtectedRoute = location.startsWith('/home') ||
+          location.startsWith('/services') ||
+          location.startsWith('/courses') ||
+          location.startsWith('/profile');
 
-      // Allow splash and onboarding without auth
-      if (isOnSplash || isOnOnboarding) {
-        return null;
+      if (!isAuthenticated && isProtectedRoute) {
+        return '/auth-choice';
       }
 
-      // Redirect to login if not authenticated and not on auth routes
-      if (!isAuthenticated && !isOnAuthRoute) {
-        return '/auth/login';
-      }
-
-      // Redirect to home if authenticated and on auth routes
-      if (isAuthenticated && isOnAuthRoute) {
+      if (isAuthenticated && location == '/auth-choice') {
         return '/home';
       }
 
@@ -55,6 +54,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         builder: (_, __) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/auth-choice',
+        builder: (_, __) => const AuthChoiceScreen(),
       ),
       GoRoute(
         path: '/auth/login',
@@ -87,6 +90,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (_, __) => const ServicesScreen(),
                 routes: [
                   GoRoute(
+                    path: 'category/:name',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (_, state) => CategoryServicesScreen(
+                      categoryName: state.pathParameters['name']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'detail/:id',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (_, state) => ServiceDetailScreen(
+                      serviceId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
                     path: 'book',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (_, state) => BookingScreen(
@@ -105,8 +122,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/history',
-                builder: (_, __) => const HistoryScreen(),
+                path: '/courses',
+                builder: (_, __) => const CoursesScreen(),
               ),
             ],
           ),
@@ -120,6 +137,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'journey',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (_, __) => const JourneyScreen(),
+                  ),
+                  GoRoute(
+                    path: 'history',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (_, __) => const HistoryScreen(),
                   ),
                 ],
               ),

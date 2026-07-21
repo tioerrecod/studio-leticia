@@ -15,8 +15,11 @@ class HomeShell extends StatelessWidget {
         currentTab: _tabFromIndex(navigationShell.currentIndex),
         onTabSelected: (tab) {
           final index = _indexFromTab(tab);
-          navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+          if (index != null) {
+            navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+          }
         },
+        onFabTap: () => context.go('/services/book'),
       ),
     );
   }
@@ -25,18 +28,19 @@ class HomeShell extends StatelessWidget {
     switch (index) {
       case 0: return SLCustomerTab.home;
       case 1: return SLCustomerTab.booking;
-      case 2: return SLCustomerTab.history;
+      case 2: return SLCustomerTab.courses;
       case 3: return SLCustomerTab.profile;
       default: return SLCustomerTab.home;
     }
   }
 
-  int _indexFromTab(SLCustomerTab tab) {
+  int? _indexFromTab(SLCustomerTab tab) {
     switch (tab) {
       case SLCustomerTab.home: return 0;
       case SLCustomerTab.booking: return 1;
-      case SLCustomerTab.history: return 2;
+      case SLCustomerTab.courses: return 2;
       case SLCustomerTab.profile: return 3;
+      case SLCustomerTab.history: return null;
     }
   }
 }

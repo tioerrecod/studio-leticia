@@ -42,7 +42,7 @@ class SLServiceExperience extends StatelessWidget {
           border: Border.all(color: SLColors.border, width: 0.5),
           boxShadow: [
             BoxShadow(
-              color: SLColors.carbon.withValues(alpha: 0.03),
+              color: SLColors.textPrimary.withValues(alpha: 0.03),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -81,7 +81,7 @@ class SLServiceExperience extends StatelessWidget {
                             Text(
                               title,
                               style: SLTypography.h3.copyWith(
-                                color: SLColors.carbon,
+                                color: SLColors.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -89,7 +89,7 @@ class SLServiceExperience extends StatelessWidget {
                               tagline,
                               style: SLTypography.caption.copyWith(
                                 color: isSignature
-                                    ? SLColors.champagne
+                                    ? SLColors.accentGold
                                     : SLColors.textSecondary,
                                 fontWeight: isSignature
                                     ? FontWeight.w600
@@ -106,13 +106,13 @@ class SLServiceExperience extends StatelessWidget {
                             vertical: SLSpacing.mini,
                           ),
                           decoration: BoxDecoration(
-                            color: SLColors.champagne.withValues(alpha: 0.1),
+                            color: SLColors.accentGold.withValues(alpha: 0.1),
                             borderRadius: SLRadius.chip,
                           ),
                           child: Text(
                             'EXCLUSIVO',
                             style: SLTypography.overline.copyWith(
-                              color: SLColors.champagne,
+                              color: SLColors.accentGold,
                               letterSpacing: 1,
                             ),
                           ),
@@ -148,7 +148,7 @@ class SLServiceExperience extends StatelessWidget {
                       Text(
                         price,
                         style: SLTypography.h3.copyWith(
-                          color: SLColors.champagne,
+                          color: SLColors.accentGold,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

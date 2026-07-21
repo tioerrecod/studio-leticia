@@ -1,6 +1,60 @@
 import 'service_item.dart';
 import 'professional.dart';
 
+class AppointmentService {
+  final String id;
+  final String appointmentId;
+  final String serviceId;
+  final String name;
+  final int duration;
+  final double price;
+  final double commissionPct;
+  final int sortOrder;
+  final ServiceItem? service;
+
+  const AppointmentService({
+    required this.id,
+    required this.appointmentId,
+    required this.serviceId,
+    required this.name,
+    required this.duration,
+    required this.price,
+    this.commissionPct = 0,
+    this.sortOrder = 0,
+    this.service,
+  });
+
+  factory AppointmentService.fromJson(Map<String, dynamic> json) {
+    ServiceItem? svc;
+    if (json['service'] is Map<String, dynamic>) {
+      svc = ServiceItem.fromJson(json['service'] as Map<String, dynamic>);
+    }
+
+    return AppointmentService(
+      id: json['id'] as String,
+      appointmentId: json['appointment_id'] as String,
+      serviceId: json['service_id'] as String,
+      name: json['name'] as String? ?? '',
+      duration: json['duration'] as int? ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0,
+      commissionPct: (json['commission_pct'] as num?)?.toDouble() ?? 0,
+      sortOrder: json['sort_order'] as int? ?? 0,
+      service: svc,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'appointment_id': appointmentId,
+    'service_id': serviceId,
+    'name': name,
+    'duration': duration,
+    'price': price,
+    'commission_pct': commissionPct,
+    'sort_order': sortOrder,
+  };
+}
+
 class Appointment {
   final String id;
   final String? tenantId;
@@ -20,7 +74,10 @@ class Appointment {
   final String? cancellationReason;
   final DateTime createdAt;
 
-  // For backward compatibility with simple appointments
+  // Services via appointment_services junction table
+  final List<AppointmentService> appointmentServices;
+
+  // Legacy compatibility fields
   final ServiceItem? service;
   final String? serviceName;
   final int? serviceDuration;
@@ -45,6 +102,7 @@ class Appointment {
     this.cancelledAt,
     this.cancellationReason,
     required this.createdAt,
+    this.appointmentServices = const [],
     this.service,
     this.serviceName,
     this.serviceDuration,
@@ -69,22 +127,45 @@ class Appointment {
     if (endAt != null) {
       return endAt!.difference(startAt).inMinutes;
     }
-    return serviceDuration ?? 0;
+    if (serviceDuration != null) return serviceDuration!;
+    if (appointmentServices.isNotEmpty) {
+      return appointmentServices.first.duration;
+    }
+    return 0;
+  }
+
+  String get displayServiceName {
+    if (serviceName != null) return serviceName!;
+    if (appointmentServices.isNotEmpty) return appointmentServices.first.name;
+    return 'Serviço';
+  }
+
+  double get displayServicePrice {
+    if (servicePrice != null) return servicePrice!;
+    if (appointmentServices.isNotEmpty) return appointmentServices.first.price;
+    return 0;
   }
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
-    // Handle nested service and professional objects
     ServiceItem? service;
     Professional? professional;
 
     if (json['service'] is Map<String, dynamic>) {
-      service = ServiceItem.fromJson(json['service']);
+      service = ServiceItem.fromJson(json['service'] as Map<String, dynamic>);
     }
     if (json['professional'] is Map<String, dynamic>) {
-      professional = Professional.fromJson(json['professional']);
+      professional = Professional.fromJson(json['professional'] as Map<String, dynamic>);
     }
 
-    // Parse services JSONB array
+    // Parse appointment_services array (real schema)
+    List<AppointmentService> apptServices = [];
+    if (json['appointment_services'] is List) {
+      apptServices = (json['appointment_services'] as List)
+          .map((s) => AppointmentService.fromJson(s as Map<String, dynamic>))
+          .toList();
+    }
+
+    // Parse services JSONB array (legacy)
     String? serviceName;
     int? serviceDuration;
     double? servicePrice;
@@ -98,6 +179,10 @@ class Appointment {
       serviceName = service.name;
       serviceDuration = int.tryParse(service.duration);
       servicePrice = service.price;
+    } else if (apptServices.isNotEmpty) {
+      serviceName = apptServices.first.name;
+      serviceDuration = apptServices.first.duration;
+      servicePrice = apptServices.first.price;
     }
 
     // Parse date_time or start_at
@@ -128,6 +213,7 @@ class Appointment {
       cancelledAt: json['cancelled_at'] != null ? DateTime.parse(json['cancelled_at'] as String) : null,
       cancellationReason: json['cancellation_reason'] as String?,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : DateTime.now(),
+      appointmentServices: apptServices,
       service: service,
       serviceName: serviceName,
       serviceDuration: serviceDuration,

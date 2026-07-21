@@ -79,3 +79,6 @@ packages/*/pubspec.lock
 
 # Apps — commit pubspec.lock for reproducible builds
 # apps/*/pubspec.lock
+
+.vercel
+.env*

@@ -7,3 +7,4 @@ export 'experience_stage.dart';
 export 'loyalty_tier.dart';
 export 'customer.dart';
 export 'financial.dart';
+export 'service_media.dart';

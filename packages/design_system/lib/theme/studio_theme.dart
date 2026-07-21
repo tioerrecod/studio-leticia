@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import '../tokens/colors.dart';
 import '../tokens/typography.dart';
+import '../tokens/radius.dart';
+import '../tokens/spacing.dart';
 
 class StudioTheme {
   StudioTheme._();
 
+  /// Tema padrão — Studio Leticia 3.0 Light (Bege + Dourado)
+  /// Usado em 80% da experiência operacional (Home, Serviços, Agendamento, Histórico, Perfil)
   static ThemeData get light {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: SLColors.background,
+      scaffoldBackgroundColor: SLColors.bgPrimary,
       colorScheme: const ColorScheme.light(
-        primary: SLColors.champagne,
-        onPrimary: SLColors.ivory,
-        secondary: SLColors.gold,
-        onSecondary: SLColors.carbon,
+        primary: SLColors.accentGold,
+        onPrimary: SLColors.textOnGold,
+        secondary: SLColors.accentGoldLight,
+        onSecondary: SLColors.textPrimary,
         surface: SLColors.surface,
-        onSurface: SLColors.carbon,
-        error: SLColors.error,
-        onError: SLColors.ivory,
+        onSurface: SLColors.textPrimary,
+        error: SLColors.stateError,
+        onError: SLColors.textInverse,
       ),
       textTheme: TextTheme(
         displayLarge: SLTypography.display,
@@ -29,12 +33,12 @@ class StudioTheme {
         bodyMedium: SLTypography.body,
         bodySmall: SLTypography.bodySmall,
         labelLarge: SLTypography.button,
-        labelMedium: SLTypography.buttonSmall,
-        labelSmall: SLTypography.overline,
+        labelMedium: SLTypography.label,
+        labelSmall: SLTypography.badge,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: SLColors.background,
-        foregroundColor: SLColors.carbon,
+        backgroundColor: SLColors.bgPrimary,
+        foregroundColor: SLColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0.5,
         centerTitle: true,
@@ -43,18 +47,21 @@ class StudioTheme {
         color: SLColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: SLColors.border, width: 0.5),
+          borderRadius: SLRadius.md,
+          side: const BorderSide(color: SLColors.borderSubtle, width: 0.5),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: SLColors.champagne,
-          foregroundColor: SLColors.ivory,
+          backgroundColor: SLColors.accentGold,
+          foregroundColor: SLColors.textOnGold,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SLSpacing.space6,
+            vertical: SLSpacing.space3,
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: SLRadius.xl,
           ),
         ),
       ),
@@ -62,101 +69,125 @@ class StudioTheme {
         filled: true,
         fillColor: SLColors.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: SLColors.border, width: 0.5),
+          borderRadius: SLRadius.sm,
+          borderSide: const BorderSide(color: SLColors.borderSubtle, width: 0.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: SLColors.border, width: 0.5),
+          borderRadius: SLRadius.sm,
+          borderSide: const BorderSide(color: SLColors.borderSubtle, width: 0.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: SLColors.champagne, width: 1),
+          borderRadius: SLRadius.sm,
+          borderSide: const BorderSide(color: SLColors.borderFocus, width: 1),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: SLSpacing.space4,
+          vertical: SLSpacing.space3,
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: SLColors.divider,
         thickness: 0.5,
         space: 0,
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: SLColors.surface,
+        selectedItemColor: SLColors.accentGold,
+        unselectedItemColor: SLColors.textDisabled,
+        elevation: 8,
+        type: BottomNavigationBarType.fixed,
+      ),
     );
   }
 
+  /// Tema escuro — Absolute Black (legado BOS v2)
+  /// Usado em momentos de assinatura de marca via bgInverse explícito nas telas
   static ThemeData get dark {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: SLColors.background,
+      scaffoldBackgroundColor: SLColors.bgInverse,
       colorScheme: const ColorScheme.dark(
-        primary: SLColors.champagne,
-        onPrimary: SLColors.background,
-        secondary: SLColors.gold,
-        onSecondary: SLColors.background,
-        surface: SLColors.surface,
-        onSurface: SLColors.ivory,
-        error: SLColors.error,
-        onError: SLColors.ivory,
+        primary: SLColors.accentGold,
+        onPrimary: SLColors.bgInverse,
+        secondary: SLColors.accentGoldLight,
+        onSecondary: SLColors.bgInverse,
+        surface: SLColors.surfaceCardDark,
+        onSurface: SLColors.textInverse,
+        error: SLColors.stateError,
+        onError: SLColors.textInverse,
       ),
       textTheme: TextTheme(
-        displayLarge: SLTypography.display,
-        headlineLarge: SLTypography.h1,
-        headlineMedium: SLTypography.h2,
-        headlineSmall: SLTypography.h3,
-        bodyLarge: SLTypography.bodyLarge,
-        bodyMedium: SLTypography.body,
-        bodySmall: SLTypography.bodySmall,
-        labelLarge: SLTypography.button,
-        labelMedium: SLTypography.buttonSmall,
-        labelSmall: SLTypography.overline,
+        displayLarge: SLTypography.display.copyWith(color: SLColors.textInverse),
+        headlineLarge: SLTypography.h1.copyWith(color: SLColors.textInverse),
+        headlineMedium: SLTypography.h2.copyWith(color: SLColors.textInverse),
+        headlineSmall: SLTypography.h3.copyWith(color: SLColors.textInverse),
+        bodyLarge: SLTypography.bodyLarge.copyWith(color: SLColors.textInverse),
+        bodyMedium: SLTypography.body.copyWith(color: SLColors.textInverse),
+        bodySmall: SLTypography.bodySmall.copyWith(color: SLColors.textInverse),
+        labelLarge: SLTypography.button.copyWith(color: SLColors.textInverse),
+        labelMedium: SLTypography.label.copyWith(color: SLColors.textInverse),
+        labelSmall: SLTypography.badge.copyWith(color: SLColors.textInverse),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: SLColors.background,
-        foregroundColor: SLColors.champagne,
+        backgroundColor: Colors.transparent,
+        foregroundColor: SLColors.textInverse,
         elevation: 0,
-        scrolledUnderElevation: 0.5,
         centerTitle: true,
       ),
       cardTheme: CardThemeData(
-        color: SLColors.surface,
+        color: SLColors.surfaceCardDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: SLColors.border, width: 0.5),
+          borderRadius: SLRadius.md,
+          side: const BorderSide(color: SLColors.borderSubtle, width: 0.5),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: SLColors.champagne,
-          foregroundColor: SLColors.background,
+          backgroundColor: SLColors.accentGold,
+          foregroundColor: SLColors.textOnGold,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SLSpacing.space6,
+            vertical: SLSpacing.space3,
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: SLRadius.xl,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: SLColors.surfaceVariant,
+        fillColor: SLColors.surfaceCardDark,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: SLColors.border, width: 0.5),
+          borderRadius: SLRadius.sm,
+          borderSide: const BorderSide(color: SLColors.borderSubtle, width: 0.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: SLColors.border, width: 0.5),
+          borderRadius: SLRadius.sm,
+          borderSide: const BorderSide(color: SLColors.borderSubtle, width: 0.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: SLColors.champagne, width: 1),
+          borderRadius: SLRadius.sm,
+          borderSide: const BorderSide(color: SLColors.accentGold, width: 1),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: SLSpacing.space4,
+          vertical: SLSpacing.space3,
+        ),
       ),
       dividerTheme: const DividerThemeData(
-        color: SLColors.divider,
+        color: SLColors.borderSubtle,
         thickness: 0.5,
         space: 0,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: SLColors.surfaceCardDark,
+        selectedItemColor: SLColors.accentGold,
+        unselectedItemColor: SLColors.textDisabled,
+        elevation: 8,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

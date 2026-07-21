@@ -6,7 +6,7 @@ void main() {
     test('should create ServiceItem from JSON', () {
       final json = {
         'id': '123',
-        'name': 'Corte Feminino',
+        'name': 'Tranças Box Braids',
         'description': 'Corte moderno e estiloso',
         'duration': '45 min',
         'price': 85.0,
@@ -18,7 +18,7 @@ void main() {
       final service = ServiceItem.fromJson(json);
 
       expect(service.id, '123');
-      expect(service.name, 'Corte Feminino');
+      expect(service.name, 'Tranças Box Braids');
       expect(service.description, 'Corte moderno e estiloso');
       expect(service.duration, '45 min');
       expect(service.price, 85.0);
@@ -29,7 +29,7 @@ void main() {
     test('should format price correctly', () {
       const service = ServiceItem(
         id: '123',
-        name: 'Corte Feminino',
+        name: 'Tranças Box Braids',
         description: 'Descricao',
         duration: '45 min',
         price: 85.0,
@@ -42,7 +42,7 @@ void main() {
     test('should handle nullable fields', () {
       final json = {
         'id': '123',
-        'name': 'Corte Feminino',
+        'name': 'Tranças Box Braids',
         'description': 'Descricao',
         'duration': '45 min',
         'price': 85.0,

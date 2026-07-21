@@ -1,42 +1,48 @@
-import '../models/models.dart';
+import 'package:core/core.dart';
+import '../models/home_data.dart';
 
-final List<Service> mockServices = [
-  const Service(
+final List<ServiceItem> mockServices = [
+  ServiceItem(
     id: 'corte-personalizado',
     name: 'Corte Personalizado',
-    description: 'Corte sob medida com diagóstico capilar e acabamento perfeito.',
-    duration: '60 min',
+    description: 'Corte sob medida com diagnóstico capilar e acabamento perfeito.',
+    duration: '60',
     price: 180,
     isSignature: true,
+    category: 'Cortes',
   ),
-  const Service(
+  ServiceItem(
     id: 'hidratacao-premium',
     name: 'Hidratação Premium',
     description: 'Tratamento profundo com ácido hialurônico e queratina.',
-    duration: '90 min',
+    duration: '90',
     price: 250,
+    category: 'Tratamentos',
   ),
-  const Service(
+  ServiceItem(
     id: 'escova-modeladora',
     name: 'Escova Modeladora',
     description: 'Escova com modelagem e finalização profissional.',
-    duration: '45 min',
+    duration: '45',
     price: 120,
+    category: 'Finalização',
   ),
-  const Service(
+  ServiceItem(
     id: 'spa-capilar',
     name: 'Spa Capilar Experiência',
     description: 'Ritual completo de relaxamento e tratamento capilar.',
-    duration: '120 min',
+    duration: '120',
     price: 350,
     isSignature: true,
+    category: 'Experiências',
   ),
-  const Service(
+  ServiceItem(
     id: 'coloracao-corte',
     name: 'Coloração + Corte',
     description: 'Coloração personalizada com corte harmonizado.',
-    duration: '150 min',
+    duration: '150',
     price: 420,
+    category: 'Cortes',
   ),
 ];
 
@@ -46,19 +52,35 @@ final List<Professional> mockProfessionals = [
   const Professional(id: 'ana', name: 'Ana'),
 ];
 
+Appointment _buildAppointment({required int daysFromNow}) {
+  final now = DateTime.now();
+  final date = DateTime(now.year, now.month, now.day + daysFromNow, 14, 0);
+  return Appointment(
+    id: 'mock-${daysFromNow}',
+    professionalId: 'leticia',
+    startAt: date,
+    status: 'scheduled',
+    createdAt: now,
+    customerName: 'Rafaela',
+    service: mockServices.first,
+    serviceName: mockServices.first.name,
+    serviceDuration: int.tryParse(mockServices.first.duration),
+    servicePrice: mockServices.first.price,
+    professional: mockProfessionals.first,
+    dateTime: date,
+  );
+}
+
 HomeData mockHomeData({
   bool withAppointment = true,
   bool withAiMessage = true,
 }) {
   return HomeData(
-    heroImageUrl: '',
     studioName: 'Studio Letícia',
+    tagline: 'Sua beleza, nossa história',
+    heroImageUrl: '',
     nextAppointment: withAppointment
-        ? Appointment(
-            customerName: 'Rafaela',
-            service: mockServices.first,
-            dateTime: DateTime.now().add(const Duration(days: 2)),
-          )
+        ? _buildAppointment(daysFromNow: 2)
         : null,
     aiConciergeMessage: withAiMessage
         ? 'Baseado no seu perfil, recomendamos uma hidratação profunda antes do casamento. Que tal agendar?'

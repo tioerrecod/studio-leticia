@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:design_system/design_system.dart';
 import '../../providers/providers.dart';
 
@@ -11,7 +12,7 @@ class DashboardScreen extends ConsumerWidget {
     final metrics = ref.watch(dashboardMetricsProvider);
 
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -26,7 +27,7 @@ class DashboardScreen extends ConsumerWidget {
                     Text(
                       'Command Center',
                       style: SLTypography.h2.copyWith(
-                        color: SLColors.carbon,
+                        color: SLColors.textPrimary,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -41,7 +42,6 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
             ),
-
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: SLSpacing.md),
               sliver: SliverGrid(
@@ -147,7 +147,6 @@ class DashboardScreen extends ConsumerWidget {
                 ]),
               ),
             ),
-
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -156,23 +155,22 @@ class DashboardScreen extends ConsumerWidget {
                 child: Text(
                   'INSIGHTS DA IA',
                   style: SLTypography.overline.copyWith(
-                    color: SLColors.champagne,
+                    color: SLColors.accentGold,
                     letterSpacing: 2,
                   ),
                 ),
               ),
             ),
-
             SliverToBoxAdapter(
               child: SLBeautyConcierge(
                 clientName: 'Equipe',
-                message: 'Rafaela n\u00e3o visita h\u00e1 3 semanas. Clientes com esse perfil t\u00eam 78% de chance de reativar com uma oferta personalizada.',
+                message:
+                    'Rafaela n\u00e3o visita h\u00e1 3 semanas. Clientes com esse perfil t\u00eam 78% de chance de reativar com uma oferta personalizada.',
                 actionLabel: 'Criar oferta',
                 onAction: () {},
                 onDismiss: () {},
               ),
             ),
-
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -184,22 +182,24 @@ class DashboardScreen extends ConsumerWidget {
                     Text(
                       'Agenda de hoje',
                       style: SLTypography.h3.copyWith(
-                        color: SLColors.carbon,
+                        color: SLColors.textPrimary,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    Text(
-                      'Ver todas',
-                      style: SLTypography.caption.copyWith(
-                        color: SLColors.champagne,
-                        fontWeight: FontWeight.w600,
+                    GestureDetector(
+                      onTap: () => context.push('/agenda/completa'),
+                      child: Text(
+                        'Ver todas',
+                        style: SLTypography.caption.copyWith(
+                          color: SLColors.accentGold,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-
             SliverToBoxAdapter(
               child: SLAppointmentCard(
                 time: '09:00',
@@ -207,7 +207,7 @@ class DashboardScreen extends ConsumerWidget {
                 serviceName: 'Hidrata\u00e7\u00e3o Premium',
                 rating: '5.0',
                 iaSuggestion: 'Confirmado',
-                onTap: () {},
+                onTap: () => context.push('/agenda/detalhes/1'),
               ),
             ),
             SliverToBoxAdapter(
@@ -215,8 +215,8 @@ class DashboardScreen extends ConsumerWidget {
                 time: '10:30',
                 customerName: 'Mariana',
                 serviceName: 'Corte Personalizado',
-                iaSuggestion: 'Aguardando confirma\u00e7\u00e3o',
-                onTap: () {},
+                iaSuggestion: 'Aguardando',
+                onTap: () => context.push('/agenda/detalhes/2'),
               ),
             ),
             SliverToBoxAdapter(
@@ -225,10 +225,9 @@ class DashboardScreen extends ConsumerWidget {
                 customerName: 'Ana Beatriz',
                 serviceName: 'Colora\u00e7\u00e3o + Corte',
                 rating: '4.5',
-                onTap: () {},
+                onTap: () => context.push('/agenda/detalhes/3'),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: SLSpacing.huge)),
           ],
         ),

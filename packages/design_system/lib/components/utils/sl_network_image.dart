@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../tokens/colors.dart';
-import '../../tokens/typography.dart';
-import '../../tokens/radius.dart';
 
 class SLNetworkImage extends StatelessWidget {
   final String url;
@@ -49,7 +47,7 @@ class SLNetworkImage extends StatelessWidget {
                     : null,
                 strokeWidth: 2,
                 valueColor: const AlwaysStoppedAnimation<Color>(
-                  SLColors.champagne,
+                  SLColors.accentGold,
                 ),
               ),
             ),

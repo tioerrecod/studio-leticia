@@ -10,29 +10,11 @@ class CrmScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final customersAsync = ref.watch(customersProvider);
-    final searchQuery = ref.watch(customerSearchProvider);
 
     return Scaffold(
-      backgroundColor: SLColors.background,
-      appBar: AppBar(
-        title: Text(
-          'Clientes',
-          style: SLTypography.h3.copyWith(
-            color: SLColors.carbon,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add_outlined, color: SLColors.champagne),
-            onPressed: () {
-              // TODO: Navigate to create customer
-            },
-          ),
-        ],
-      ),
-      body: Column(
+      backgroundColor: SLColors.bgPrimary,
+      body: SafeArea(
+        child: Column(
         children: [
           // Search Bar
           Padding(
@@ -57,7 +39,7 @@ class CrmScreen extends ConsumerWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: SLRadius.card,
-                  borderSide: const BorderSide(color: SLColors.champagne),
+                  borderSide: const BorderSide(color: SLColors.accentGold),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: SLSpacing.md,
@@ -71,7 +53,7 @@ class CrmScreen extends ConsumerWidget {
           Expanded(
             child: customersAsync.when(
               loading: () => const Center(
-                child: CircularProgressIndicator(color: SLColors.champagne),
+                child: CircularProgressIndicator(color: SLColors.accentGold),
               ),
               error: (e, _) => Center(
                 child: Column(
@@ -81,9 +63,10 @@ class CrmScreen extends ConsumerWidget {
                     const SizedBox(height: SLSpacing.md),
                     Text('Erro ao carregar clientes', style: SLTypography.body.copyWith(color: SLColors.textSecondary)),
                     const SizedBox(height: SLSpacing.sm),
-                    TextButton(
+                    SLButton(
+                      label: 'Tentar novamente',
+                      variant: SLButtonVariant.text,
                       onPressed: () => ref.invalidate(customersProvider),
-                      child: Text('Tentar novamente', style: SLTypography.button.copyWith(color: SLColors.champagne)),
                     ),
                   ],
                 ),
@@ -127,6 +110,7 @@ class CrmScreen extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -136,24 +120,33 @@ class _CustomerCard extends StatelessWidget {
 
   const _CustomerCard({required this.customer});
 
+  SLBadgeVariant _getTierBadgeVariant(String tier) {
+    switch (tier) {
+      case 'PLATINA':
+        return SLBadgeVariant.success;
+      case 'OURO':
+        return SLBadgeVariant.warning;
+      case 'PRATA':
+        return SLBadgeVariant.info;
+      default:
+        return SLBadgeVariant.gold;
+    }
+  }
+
+  String _getTier(double totalSpent) {
+    if (totalSpent >= 5000) return 'PLATINA';
+    if (totalSpent >= 2000) return 'OURO';
+    if (totalSpent >= 1000) return 'PRATA';
+    return 'BRONZE';
+  }
+
   @override
   Widget build(BuildContext context) {
     final tier = _getTier(customer.totalSpent);
 
-    return Container(
-      padding: const EdgeInsets.all(SLSpacing.md),
-      decoration: BoxDecoration(
-        color: SLColors.surface,
-        borderRadius: SLRadius.card,
-        border: Border.all(color: SLColors.border, width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: SLColors.carbon.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return SLCard(
+      variant: SLCardVariant.outlined,
+      onTap: () {},
       child: Row(
         children: [
           // Avatar
@@ -161,7 +154,7 @@ class _CustomerCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: const BoxDecoration(
-              color: SLColors.cream,
+              color: SLColors.bgSecondary,
               shape: BoxShape.circle,
             ),
             child: customer.avatarUrl != null
@@ -173,7 +166,7 @@ class _CustomerCard extends StatelessWidget {
                         child: Text(
                           customer.initials,
                           style: SLTypography.body.copyWith(
-                            color: SLColors.champagne,
+                            color: SLColors.accentGold,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -184,7 +177,7 @@ class _CustomerCard extends StatelessWidget {
                     child: Text(
                       customer.initials,
                       style: SLTypography.body.copyWith(
-                        color: SLColors.champagne,
+                        color: SLColors.accentGold,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -203,32 +196,18 @@ class _CustomerCard extends StatelessWidget {
                       child: Text(
                         customer.name,
                         style: SLTypography.body.copyWith(
-                          color: SLColors.carbon,
+                          color: SLColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: SLSpacing.sm,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getTierColor(tier).withValues(alpha: 0.1),
-                        borderRadius: SLRadius.chip,
-                      ),
-                      child: Text(
-                        tier,
-                        style: SLTypography.overline.copyWith(
-                          color: _getTierColor(tier),
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
+                    SLBadge(
+                      variant: _getTierBadgeVariant(tier),
+                      label: tier,
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: SLSpacing.xs),
                 if (customer.phone != null)
                   Text(
                     customer.phone!,
@@ -253,24 +232,11 @@ class _CustomerCard extends StatelessWidget {
                 if (customer.tags.isNotEmpty) ...[
                   const SizedBox(height: SLSpacing.xs),
                   Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: customer.tags.map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: SLColors.cream,
-                        borderRadius: SLRadius.chip,
-                      ),
-                      child: Text(
-                        tag,
-                        style: SLTypography.overline.copyWith(
-                          color: SLColors.champagne,
-                          fontSize: 9,
-                        ),
-                      ),
+                    spacing: SLSpacing.xs,
+                    runSpacing: SLSpacing.xs,
+                    children: customer.tags.map((tag) => SLBadge(
+                      variant: SLBadgeVariant.info,
+                      label: tag,
                     )).toList(),
                   ),
                 ],
@@ -288,26 +254,6 @@ class _CustomerCard extends StatelessWidget {
       ),
     );
   }
-
-  String _getTier(double totalSpent) {
-    if (totalSpent >= 5000) return 'PLATINA';
-    if (totalSpent >= 2000) return 'OURO';
-    if (totalSpent >= 1000) return 'PRATA';
-    return 'BRONZE';
-  }
-
-  Color _getTierColor(String tier) {
-    switch (tier) {
-      case 'PLATINA':
-        return SLColors.sage;
-      case 'OURO':
-        return SLColors.gold;
-      case 'PRATA':
-        return SLColors.textSecondary;
-      default:
-        return SLColors.champagne;
-    }
-  }
 }
 
 class _InfoBadge extends StatelessWidget {
@@ -322,12 +268,11 @@ class _InfoBadge extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 12, color: SLColors.textDisabled),
-        const SizedBox(width: 4),
+        const SizedBox(width: SLSpacing.xs),
         Text(
           label,
-          style: SLTypography.overline.copyWith(
+          style: SLTypography.caption.copyWith(
             color: SLColors.textSecondary,
-            fontSize: 10,
           ),
         ),
       ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../shadows.dart';
+import 'package:design_system/tokens/shadows.dart';
 
 class SLHoverCard extends StatefulWidget {
   final Widget child;
@@ -25,7 +25,7 @@ class _SLHoverCardState extends State<SLHoverCard> {
   Matrix4 _transform() {
     if (!_isHovered) return Matrix4.identity();
     final matrix = Matrix4.identity();
-    matrix.translate(0, -2);
+    matrix.translateByDouble(0, -2, 0, 1);
     return matrix;
   }
 

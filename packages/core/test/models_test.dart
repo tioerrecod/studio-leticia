@@ -219,7 +219,7 @@ void main() {
         createdAt: DateTime(2026, 7, 15),
       );
 
-      expect(appointment.formattedDate, '15 jul');
+      expect(appointment.formattedDate, '15 jul 2026');
     });
   });
 

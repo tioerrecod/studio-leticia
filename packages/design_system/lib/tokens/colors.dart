@@ -4,50 +4,71 @@ class SLColors {
   SLColors._();
 
   // ══════════════════════════════════════════════════════════════
-  // PALETA PREMIUM — ABSOLUTE BLACK FOUNDATION
+  // STUDIO LETÍCIA 3.0 — BEIGE & GOLD
   // ──────────────────────────────────────────────────────────────
-  // Fundo   → Preto absoluto (#000000) — autoridade máxima
-  // Dourado → Luxo silencioso, prestígio, excelência
-  // Off-white → Autenticidade, pureza quente, elegância
-  // Rose Gold → Beleza feminina, sofisticação íntima
-  // Sage     → Natureza, equilíbrio, calma
+  // Fundo    → Bege quente (#F5EFE6) — acolhimento, ateliê
+  // Carvão   → Contraste de marca (#1C1815) — exclusividade
+  // Dourado  → Luxo discreto (#C9A05C) — old money, confiança
   // ══════════════════════════════════════════════════════════════
 
-  // ── Fundo — ABSOLUTE BLACK ──
-  static const Color background = Color(0xFF000000);
+  // ── Background ──────────────────────────────────────────
+  static const Color background = Color(0xFFF5EFE6);
+  static const Color bgPrimary = Color(0xFFF5EFE6);
+  static const Color bgSecondary = Color(0xFFEDE3D3);
+  static const Color bgInverse = Color(0xFF1C1815);
 
-  // ── Superfícies — hierarquia sem quebrar o preto ──
-  static const Color surface = Color(0xFF0D0D0D);
-  static const Color surfaceVariant = Color(0xFF1A1A1A);
-  static const Color divider = Color(0xFF2A2A2A);
+  // ── Surfaces ───────────────────────────────────────────
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceVariant = Color(0xFFEDE3D3);
+  static const Color surfaceCardDark = Color(0xFF2A2420);
+  static const Color divider = Color(0xFFE3D8C4);
 
-  // ── Primary — AUTORIDADE / AUTENTICIDADE ──
-  static const Color champagne = Color(0xFFD4A843);
-  static const Color gold = Color(0xFFE2BC6A);
-  static const Color cream = Color(0xFF1A1A1A);
+  // ── Accent — Gold ──────────────────────────────────────
+  static const Color accentGold = Color(0xFFC9A05C);
+  static const Color accentGoldDark = Color(0xFFA9803F);
+  static const Color accentGoldLight = Color(0xFFE8D5AF);
 
-  // ── Neutrals ─────────────────────────────────────────
-  static const Color ivory = Color(0xFFF5F0E8);
-  static const Color carbon = Color(0xFFF5F0E8);
-  static const Color sage = Color(0xFF66BB6A);
+  // ── Backward-compatible aliases ────────────────────────
+  static const Color champagne = accentGold;
+  static const Color gold = accentGoldLight;
+  static const Color cream = bgSecondary;
 
-  // ── Text — claros para contraste no preto ──
-  static const Color textPrimary = Color(0xFFF5F0E8);
-  static const Color textSecondary = Color(0xFFA39D94);
-  static const Color textDisabled = Color(0xFF6E6A64);
-  static const Color textOnDark = Color(0xFFF5F0E8);
-  static const Color textOnPrimary = Color(0xFFF5F0E8);
-  static const Color textOnSecondary = Color(0xFF1A1A1A);
+  // ── Neutral ────────────────────────────────────────────
+  static const Color textOnDark = Color(0xFFF5EFE6);
 
-  // ── Borders ──────────────────────────────────────────
-  static const Color border = Color(0xFF2E2E2E);
+  // ═══ DEPRECATED — kept for migration, will remove ══════
+  // carbon was light#F5F0E8 → now dark#1C1815
+  // ivory was #F5F0E8 → now bgPrimary
+  static const Color carbon = Color(0xFF1C1815);
+  static const Color ivory = Color(0xFFF5EFE6);
+  static const Color sage = Color(0xFF5A7D5A);
 
-  // ── Semantic — contrastantes no preto ──
-  static const Color success = Color(0xFF66BB6A);
-  static const Color error = Color(0xFFE53935);
-  static const Color info = Color(0xFF42A5F5);
-  static const Color warning = Color(0xFFFFA726);
+  // ── Text ───────────────────────────────────────────────
+  static const Color textPrimary = Color(0xFF1C1815);
+  static const Color textSecondary = Color(0xFF6B6154);
+  static const Color textDisabled = Color(0xFFA39D94);
+  static const Color textInverse = Color(0xFFF5EFE6);
+  static const Color textOnPrimary = Color(0xFFF5EFE6);
+  static const Color textOnSecondary = Color(0xFF1C1815);
+  static const Color textOnGold = Color(0xFF1C1815);
 
-  // ── Disabled ─────────────────────────────────────────
-  static const Color disabled = Color(0xFF6E6A64);
+  // ── Borders ────────────────────────────────────────────
+  static const Color border = Color(0xFFE3D8C4);
+  static const Color borderSubtle = Color(0xFFE3D8C4);
+  static const Color borderFocus = Color(0xFFC9A05C);
+
+  // ── Semantic ───────────────────────────────────────────
+  static const Color stateSuccess = Color(0xFF5A7D5A);
+  static const Color stateError = Color(0xFFB05A4A);
+  static const Color stateWarning = Color(0xFFC99A4A);
+  static const Color stateInfo = Color(0xFF5C7A8A);
+
+  // ── Backward-compatible semantic aliases ───────────────
+  static const Color success = stateSuccess;
+  static const Color error = stateError;
+  static const Color warning = stateWarning;
+  static const Color info = stateInfo;
+
+  // ── Disabled ───────────────────────────────────────────
+  static const Color disabled = Color(0xFFA39D94);
 }

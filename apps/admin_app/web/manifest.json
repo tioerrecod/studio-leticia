@@ -1,11 +1,11 @@
 {
-    "name": "admin_app",
-    "short_name": "admin_app",
+    "name": "Studio Letícia Admin",
+    "short_name": "SL Admin",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1A1A1A",
+    "theme_color": "#D4A574",
+    "description": "Painel administrativo do Studio Letícia — gerencie agenda, clientes, finanças e mais.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

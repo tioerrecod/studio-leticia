@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../colors.dart';
-import '../radius.dart';
+import 'package:design_system/tokens/colors.dart';
+import 'package:design_system/tokens/radius.dart';
 
 class SLShimmer extends StatefulWidget {
   final double width;
@@ -11,7 +11,7 @@ class SLShimmer extends StatefulWidget {
     super.key,
     this.width = double.infinity,
     required this.height,
-    this.borderRadius = SLRadius.radiusSm,
+    this.borderRadius = SLRadius.sm,
   });
 
   @override
@@ -53,9 +53,9 @@ class _SLShimmerState extends State<SLShimmer> with SingleTickerProviderStateMix
             borderRadius: widget.borderRadius,
             gradient: LinearGradient(
               colors: const [
-                SLColors.borderSubtle,
+                SLColors.bgSecondary,
                 SLColors.accentGoldLight,
-                SLColors.borderSubtle,
+                SLColors.bgSecondary,
               ],
               stops: const [0.0, 0.5, 1.0],
               begin: _animation.value,

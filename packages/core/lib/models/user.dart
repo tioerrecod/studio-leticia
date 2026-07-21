@@ -5,6 +5,7 @@ class AppUser {
   final String? phone;
   final String? avatarUrl;
   final String role; // 'customer' | 'professional' | 'admin'
+  final String? tenantId;
   final DateTime createdAt;
 
   const AppUser({
@@ -14,8 +15,11 @@ class AppUser {
     this.phone,
     this.avatarUrl,
     required this.role,
+    this.tenantId,
     required this.createdAt,
   });
+
+  bool get isAdmin => ['admin', 'super_admin_1', 'super_admin_2', 'system_owner'].contains(role);
 
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
     id: json['id'] as String,
@@ -23,7 +27,8 @@ class AppUser {
     email: json['email'] as String?,
     phone: json['phone'] as String?,
     avatarUrl: json['avatar_url'] as String?,
-    role: json['role'] as String,
+    role: json['role'] is Map ? (json['role'] as Map)['name'] as String : json['role'] as String? ?? 'customer',
+    tenantId: json['tenant_id'] as String?,
     createdAt: DateTime.parse(json['created_at'] as String),
   );
 
@@ -34,6 +39,7 @@ class AppUser {
     'phone': phone,
     'avatar_url': avatarUrl,
     'role': role,
+    'tenant_id': tenantId,
     'created_at': createdAt.toIso8601String(),
   };
 }

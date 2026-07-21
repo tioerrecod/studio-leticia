@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:studio_leticia/data/mock_data.dart';
+import 'package:customer_app/data/mock_data.dart';
 
 void main() {
   group('mockData', () {

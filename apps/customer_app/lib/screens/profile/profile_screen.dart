@@ -1,468 +1,683 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system/design_system.dart';
+import 'package:core/core.dart';
 import '../../providers/supabase_providers.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(userProfileProvider);
-    final loyaltyAsync = ref.watch(loyaltyProvider);
-
-    return Scaffold(
-      backgroundColor: SLColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Profile Header
-          SliverToBoxAdapter(
-            child: profileAsync.when(
-              loading: () => const _LoadingHeader(),
-              error: (e, _) => const _ErrorHeader(),
-              data: (profile) => _ProfileHeader(profile: profile),
-            ),
-          ),
-
-          // Stats
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(SLSpacing.lg),
-              child: loyaltyAsync.when(
-                loading: () => const _LoadingStats(),
-                error: (e, _) => const _ErrorStats(),
-                data: (loyalty) => _StatsRow(loyalty: loyalty),
-              ),
-            ),
-          ),
-
-          // Menu Items
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: SLSpacing.lg),
-              child: _MenuSection(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileHeader extends StatelessWidget {
-  final Map<String, dynamic>? profile;
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  int _selectedTab = 0;
 
-  const _ProfileHeader({required this.profile});
+  static const _tabs = ['Perfil', 'Histórico', 'Fotos', 'Produtos', 'Favoritos'];
 
   @override
   Widget build(BuildContext context) {
-    final name = profile?['name'] ?? 'Cliente';
-    final email = profile?['email'] ?? '';
-    final initials = name.split(' ').map((e) => e[0]).take(2).join().toUpperCase();
+    final profileAsync = ref.watch(userProfileProvider);
+    final loyaltyAsync = ref.watch(loyaltyProvider);
+    final appointmentsAsync = ref.watch(completedAppointmentsProvider);
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-        SLSpacing.xl, SLSpacing.xxxl, SLSpacing.xl, SLSpacing.xl,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [SLColors.surface, SLColors.background],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: Column(
-        children: [
-          // Avatar
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: SLColors.champagne.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: SLColors.champagne,
-                width: 2,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                initials,
-                style: SLTypography.h1.copyWith(
-                  color: SLColors.champagne,
-                  fontWeight: FontWeight.w300,
+    final profile = profileAsync.valueOrNull ?? {};
+    final name = profile['name'] as String? ?? 'Cliente';
+    final email = profile['email'] as String? ?? '';
+    final phone = profile['phone'] as String? ?? '';
+    final birthDate = profile['birth_date'] as String? ?? '';
+    final favoriteColor = profile['favorite_color'] as String? ?? '';
+    final favoriteStyle = profile['favorite_style'] as String? ?? '';
+    final favoriteProfessional = profile['favorite_professional'] as String? ?? '';
+
+    final loyalty = loyaltyAsync.valueOrNull ?? {};
+    final currentPoints = loyalty['current_points'] ?? 0;
+
+    return Scaffold(
+      backgroundColor: SLColors.bgPrimary,
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  SLSpacing.space6,
+                  SLSpacing.space10,
+                  SLSpacing.space6,
+                  SLSpacing.space6,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundColor: SLColors.surface,
+                            child: Icon(
+                              Icons.person,
+                              size: 48,
+                              color: SLColors.accentGold,
+                            ),
+                          ),
+                          const SizedBox(height: SLSpacing.space3),
+                          Text(
+                            name,
+                            style: SLTypography.display.copyWith(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w300,
+                              color: SLColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: SLSpacing.space2),
+                          SLBadge(label: 'OURO'),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        color: SLColors.accentGold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: SLSpacing.md),
-          Text(
-            name,
-            style: SLTypography.h2.copyWith(
-              color: SLColors.ivory,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(height: SLSpacing.xs),
-          if (email.isNotEmpty)
-            Text(
-              email,
-              style: SLTypography.body.copyWith(
-                color: SLColors.textOnDark.withValues(alpha: 0.7),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 44,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: SLSpacing.space4),
+                  itemCount: _tabs.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: SLSpacing.space2),
+                  itemBuilder: (_, i) {
+                    final isSelected = i == _selectedTab;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedTab = i),
+                      child: AnimatedContainer(
+                        duration: SLAnimations.fast,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: SLSpacing.space5,
+                          vertical: SLSpacing.space2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected ? SLColors.accentGold : SLColors.surface,
+                          borderRadius: SLRadius.lg,
+                          border: Border.all(
+                            color: isSelected ? SLColors.accentGold : SLColors.border,
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _tabs[i],
+                            style: SLTypography.label.copyWith(
+                              color: isSelected ? SLColors.textOnDark : SLColors.textSecondary,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LoadingHeader extends StatelessWidget {
-  const _LoadingHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      color: SLColors.surface,
-      child: const Center(
-        child: CircularProgressIndicator(color: SLColors.champagne),
-      ),
-    );
-  }
-}
-
-class _ErrorHeader extends StatelessWidget {
-  const _ErrorHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      color: SLColors.surface,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, color: SLColors.textSecondary),
-            const SizedBox(height: SLSpacing.sm),
-            Text(
-              'Erro ao carregar perfil',
-              style: SLTypography.body.copyWith(color: SLColors.textSecondary),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: SLSpacing.space6)),
+            if (_selectedTab == 0)
+              _PerfilTab(
+                name: name,
+                phone: phone,
+                email: email,
+                birthDate: birthDate,
+                favoriteColor: favoriteColor,
+                favoriteStyle: favoriteStyle,
+                favoriteProfessional: favoriteProfessional,
+                currentPoints: currentPoints,
+              ),
+            if (_selectedTab == 1)
+              ..._buildHistoricoTab(appointmentsAsync),
+            if (_selectedTab == 2)
+              _FotosTab(),
+            if (_selectedTab == 3)
+              _ProdutosTab(),
+            if (_selectedTab == 4)
+              _FavoritosTab(),
+            const SliverToBoxAdapter(child: SizedBox(height: SLSpacing.space24)),
           ],
         ),
       ),
     );
   }
-}
 
-class _StatsRow extends StatelessWidget {
-  final Map<String, dynamic>? loyalty;
-
-  const _StatsRow({required this.loyalty});
-
-  @override
-  Widget build(BuildContext context) {
-    final points = loyalty?['current_points'] ?? 0;
-    final tier = loyalty?['tier'] ?? 'BRONZE';
-
-    return Row(
-      children: [
-        _StatCard(
-          icon: Icons.star,
-          value: '$points',
-          label: 'Pontos',
-        ),
-        const SizedBox(width: SLSpacing.md),
-        _StatCard(
-          icon: Icons.workspace_premium,
-          value: '$tier',
-          label: 'Tier',
-        ),
-        const SizedBox(width: SLSpacing.md),
-        _StatCard(
-          icon: Icons.calendar_today,
-          value: '12',
-          label: 'Visitas',
-        ),
-      ],
-    );
-  }
-}
-
-class _LoadingStats extends StatelessWidget {
-  const _LoadingStats();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(3, (_) => Expanded(
-        child: Container(
-          height: 80,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: SLColors.surface,
-            borderRadius: SLRadius.card,
-          ),
-          child: const Center(
-            child: CircularProgressIndicator(color: SLColors.champagne),
-          ),
-        ),
-      )),
-    );
-  }
-}
-
-class _ErrorStats extends StatelessWidget {
-  const _ErrorStats();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(3, (_) => Expanded(
-        child: Container(
-          height: 80,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: SLColors.error.withValues(alpha: 0.1),
-            borderRadius: SLRadius.card,
-          ),
-          child: const Center(
-            child: Icon(Icons.error_outline, color: SLColors.error, size: 20),
-          ),
-        ),
-      )),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-
-  const _StatCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(SLSpacing.md),
-        decoration: BoxDecoration(
-          color: SLColors.surface,
-          borderRadius: SLRadius.card,
-          border: Border.all(color: SLColors.border, width: 0.5),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: SLColors.champagne, size: 20),
-            const SizedBox(height: SLSpacing.xs),
-            Text(
-              value,
-              style: SLTypography.h3.copyWith(
-                color: SLColors.carbon,
-                fontWeight: FontWeight.w600,
+  List<Widget> _buildHistoricoTab(AsyncValue<List<Appointment>> appointmentsAsync) {
+    return [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: SLSpacing.space4),
+          child: appointmentsAsync.when(
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(SLSpacing.space12),
+                child: CircularProgressIndicator(color: SLColors.accentGold),
               ),
             ),
-            Text(
-              label,
-              style: SLTypography.overline.copyWith(
-                color: SLColors.textSecondary,
-                fontSize: 10,
+            error: (e, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(SLSpacing.space12),
+                child: Column(
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: SLColors.textSecondary),
+                    const SizedBox(height: SLSpacing.space3),
+                    Text(
+                      'Erro ao carregar hist\u00f3rico',
+                      style: SLTypography.body.copyWith(color: SLColors.textSecondary),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
+            data: (appointments) {
+              if (appointments.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(SLSpacing.space12),
+                    child: Column(
+                      children: [
+                        Icon(Icons.history, size: 64, color: SLColors.textDisabled),
+                        const SizedBox(height: SLSpacing.space4),
+                        Text(
+                          'Nenhum agendamento encontrado',
+                          style: SLTypography.h3.copyWith(color: SLColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return Column(
+                children: List.generate(appointments.length, (i) {
+                  final a = appointments[i];
+                  final day = (a.dateTime ?? a.startAt).day.toString().padLeft(2, '0');
+                  final month = _monthAbbr((a.dateTime ?? a.startAt).month);
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: SLSpacing.space2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 52,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    day,
+                                    style: SLTypography.h2.copyWith(
+                                      color: SLColors.accentGold,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    month,
+                                    style: SLTypography.caption.copyWith(
+                                      color: SLColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: SLCard(
+                                variant: SLCardVariant.outlined,
+                                padding: const EdgeInsets.all(SLSpacing.space4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      a.serviceName ?? a.service?.name ?? 'Servi\u00e7o',
+                                      style: SLTypography.body.copyWith(
+                                        color: SLColors.textPrimary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: SLSpacing.space1),
+                                    Text(
+                                      'com ${a.professional?.name ?? 'Profissional'}',
+                                      style: SLTypography.caption.copyWith(
+                                        color: SLColors.textSecondary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: SLSpacing.space2),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'R\$ ${(a.servicePrice ?? a.service?.price ?? 0).toStringAsFixed(2)}',
+                                          style: SLTypography.body.copyWith(
+                                            color: SLColors.accentGold,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          a.formattedDate,
+                                          style: SLTypography.caption.copyWith(
+                                            color: SLColors.textSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (i < appointments.length - 1)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 52),
+                          child: Divider(
+                            color: SLColors.border,
+                            height: 1,
+                            thickness: 0.5,
+                          ),
+                        ),
+                    ],
+                  );
+                }),
+              );
+            },
+          ),
         ),
       ),
-    );
+    ];
+  }
+
+  String _monthAbbr(int? month) {
+    switch (month) {
+      case 1: return 'JAN';
+      case 2: return 'FEV';
+      case 3: return 'MAR';
+      case 4: return 'ABR';
+      case 5: return 'MAI';
+      case 6: return 'JUN';
+      case 7: return 'JUL';
+      case 8: return 'AGO';
+      case 9: return 'SET';
+      case 10: return 'OUT';
+      case 11: return 'NOV';
+      case 12: return 'DEZ';
+      default: return '';
+    }
   }
 }
 
-class _MenuSection extends StatelessWidget {
+class _PerfilTab extends SliverToBoxAdapter {
+  _PerfilTab({
+    required String name,
+    required String phone,
+    required String email,
+    required String birthDate,
+    required String favoriteColor,
+    required String favoriteStyle,
+    required String favoriteProfessional,
+    required dynamic currentPoints,
+  }) : super(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: SLSpacing.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _InfoSection(title: 'Dados Pessoais', items: [
+                  _InfoRow(label: 'Nome', value: name),
+                  _InfoRow(label: 'Telefone', value: phone),
+                  _InfoRow(label: 'Email', value: email),
+                  _InfoRow(label: 'Nascimento', value: birthDate),
+                ]),
+                const SizedBox(height: SLSpacing.space6),
+                _InfoSection(title: 'Prefer\u00eancias', items: [
+                  _InfoRow(label: 'Cor favorita', value: favoriteColor),
+                  _InfoRow(label: 'Estilo favorito', value: favoriteStyle),
+                  _InfoRow(label: 'Profissional favorita', value: favoriteProfessional),
+                ]),
+                const SizedBox(height: SLSpacing.space6),
+                SLCard(
+                  variant: SLCardVariant.outlined,
+                  padding: const EdgeInsets.all(SLSpacing.space4),
+                  child: Row(
+                    children: [
+                      Icon(Icons.star, color: SLColors.accentGold, size: 28),
+                      const SizedBox(width: SLSpacing.space3),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$currentPoints',
+                            style: SLTypography.h2.copyWith(
+                              color: SLColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            'Pontos de fidelidade',
+                            style: SLTypography.caption.copyWith(
+                              color: SLColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+}
+
+class _InfoSection extends StatelessWidget {
+  final String title;
+  final List<_InfoRow> items;
+
+  const _InfoSection({required this.title, required this.items});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'MINHA CONTA',
-          style: SLTypography.overline.copyWith(
-            color: SLColors.champagne,
-            letterSpacing: 1.5,
-          ),
-        ),
-        const SizedBox(height: SLSpacing.sm),
-        _MenuItem(
-          icon: Icons.person_outline,
-          title: 'Editar Perfil',
-          onTap: () {},
-        ),
-        _MenuItem(
-          icon: Icons.notifications_outlined,
-          title: 'Notificações',
-          trailing: '2 novas',
-          onTap: () {},
-        ),
-        _MenuItem(
-          icon: Icons.payment,
-          title: 'Formas de Pagamento',
-          onTap: () {},
-        ),
-        const SizedBox(height: SLSpacing.lg),
-
-        Text(
-          'PREFERÊNCIAS',
-          style: SLTypography.overline.copyWith(
-            color: SLColors.champagne,
-            letterSpacing: 1.5,
-          ),
-        ),
-        const SizedBox(height: SLSpacing.sm),
-        _MenuItem(
-          icon: Icons.star_outline,
-          title: 'Serviços Favoritos',
-          onTap: () {},
-        ),
-        _MenuItem(
-          icon: Icons.calendar_month_outlined,
-          title: 'Horários Preferidos',
-          onTap: () {},
-        ),
-        _MenuItem(
-          icon: Icons.chat_outlined,
-          title: 'Canal de Comunicação',
-          trailing: 'WhatsApp',
-          onTap: () {},
-        ),
-        const SizedBox(height: SLSpacing.lg),
-
-        Text(
-          'SUPORTE',
-          style: SLTypography.overline.copyWith(
-            color: SLColors.champagne,
-            letterSpacing: 1.5,
-          ),
-        ),
-        const SizedBox(height: SLSpacing.sm),
-        _MenuItem(
-          icon: Icons.help_outline,
-          title: 'Central de Ajuda',
-          onTap: () {},
-        ),
-        _MenuItem(
-          icon: Icons.chat_bubble_outline,
-          title: 'Falar com Suporte',
-          onTap: () {},
-        ),
-        _MenuItem(
-          icon: Icons.star_outline,
-          title: 'Avaliar o App',
-          onTap: () {},
-        ),
-        const SizedBox(height: SLSpacing.lg),
-
-        // Logout
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () {
-              // TODO: Implement logout
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: SLColors.error,
-              side: const BorderSide(color: SLColors.error),
-              shape: RoundedRectangleBorder(
-                borderRadius: SLRadius.card,
-              ),
-              padding: const EdgeInsets.symmetric(
-                vertical: SLSpacing.md,
-              ),
-            ),
-            child: Text(
-              'Sair da Conta',
-              style: SLTypography.body.copyWith(
-                color: SLColors.error,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: SLSpacing.xl),
-
-        // Version
-        Center(
+        Padding(
+          padding: const EdgeInsets.only(bottom: SLSpacing.space3),
           child: Text(
-            'Studio Letícia v2.0.0',
-            style: SLTypography.caption.copyWith(
-              color: SLColors.textDisabled,
+            title,
+            style: SLTypography.overline.copyWith(
+              color: SLColors.accentGold,
+              letterSpacing: 1.5,
             ),
           ),
         ),
-        const SizedBox(height: SLSpacing.xxl),
+        SLCard(
+          variant: SLCardVariant.outlined,
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: List.generate(items.length, (i) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: SLSpacing.space4,
+                      vertical: SLSpacing.space3,
+                    ),
+                    child: items[i],
+                  ),
+                  if (i < items.length - 1)
+                    Divider(
+                      color: SLColors.border,
+                      height: 1,
+                      thickness: 0.5,
+                      indent: SLSpacing.space4,
+                      endIndent: SLSpacing.space4,
+                    ),
+                ],
+              );
+            }),
+          ),
+        ),
       ],
     );
   }
 }
 
-class _MenuItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? trailing;
-  final VoidCallback onTap;
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
 
-  const _MenuItem({
-    required this.icon,
-    required this.title,
-    this.trailing,
-    required this.onTap,
-  });
+  const _InfoRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: SLTypography.body.copyWith(
+            color: SLColors.textSecondary,
+          ),
+        ),
+        Text(
+          value.isNotEmpty ? value : '-',
+          style: SLTypography.body.copyWith(
+            color: SLColors.textPrimary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FotosTab extends SliverToBoxAdapter {
+  _FotosTab() : super(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: SLSpacing.space4),
+      child: GridView.count(
+        crossAxisCount: 3,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: SLSpacing.space3,
+        crossAxisSpacing: SLSpacing.space3,
+        childAspectRatio: 1,
+        children: List.generate(9, (i) {
+          final colors = [
+            SLColors.accentGoldLight,
+            SLColors.surfaceVariant,
+            SLColors.divider,
+            SLColors.bgSecondary,
+            SLColors.accentGoldLight,
+            SLColors.surfaceVariant,
+            SLColors.divider,
+            SLColors.bgSecondary,
+            SLColors.accentGoldLight,
+          ];
+          return Container(
+            decoration: BoxDecoration(
+              color: colors[i % colors.length].withValues(alpha: 0.3),
+              borderRadius: SLRadius.card,
+            ),
+            child: Icon(
+              Icons.camera_alt_outlined,
+              color: SLColors.textSecondary.withValues(alpha: 0.5),
+              size: 28,
+            ),
+          );
+        }),
+      ),
+    ),
+  );
+}
+
+class _ProdutosTab extends SliverToBoxAdapter {
+  _ProdutosTab() : super(
+    child: SizedBox(
+      height: 260,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: SLSpacing.space4),
+        itemCount: _sampleProducts.length,
+        separatorBuilder: (_, __) => const SizedBox(width: SLSpacing.space3),
+        itemBuilder: (_, i) {
+          final product = _sampleProducts[i];
+          return SizedBox(
+            width: 180,
+            child: SLCard(
+              variant: SLCardVariant.outlined,
+              padding: EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: SLColors.bgSecondary,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.shopping_bag_outlined,
+                        size: 40,
+                        color: SLColors.accentGold.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(SLSpacing.space3),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            product.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: SLTypography.bodySmall.copyWith(
+                              color: SLColors.textPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product.formattedPrice,
+                                style: SLTypography.label.copyWith(
+                                  color: SLColors.accentGold,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: SLSpacing.space1),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: SLSpacing.space1,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: SLColors.accentGold,
+                                    borderRadius: SLRadius.button,
+                                  ),
+                                  child: Text(
+                                    'COMPRAR',
+                                    textAlign: TextAlign.center,
+                                    style: SLTypography.buttonSmall.copyWith(
+                                      color: SLColors.textOnDark,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+  );
+}
+
+class _FavoritosTab extends SliverToBoxAdapter {
+  _FavoritosTab() : super(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: SLSpacing.space4),
+      child: SLCard(
+        variant: SLCardVariant.outlined,
+        padding: EdgeInsets.zero,
+        child: Column(
+          children: [
+            _FavoritoItem(
+              icon: Icons.spa_outlined,
+              label: 'Servi\u00e7os favoritos',
+            ),
+            Divider(color: SLColors.border, height: 1, thickness: 0.5, indent: SLSpacing.space4),
+            _FavoritoItem(
+              icon: Icons.auto_awesome_outlined,
+              label: 'Inspira\u00e7\u00f5es favoritas',
+            ),
+            Divider(color: SLColors.border, height: 1, thickness: 0.5, indent: SLSpacing.space4),
+            _FavoritoItem(
+              icon: Icons.menu_book_outlined,
+              label: 'Cursos favoritos',
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _FavoritoItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _FavoritoItem({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
-      child: Container(
+      onTap: () {},
+      child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: SLSpacing.md,
-          vertical: SLSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: SLColors.border.withValues(alpha: 0.5),
-              width: 0.5,
-            ),
-          ),
+          horizontal: SLSpacing.space4,
+          vertical: SLSpacing.space4,
         ),
         child: Row(
           children: [
-            Icon(icon, color: SLColors.champagne, size: 20),
-            const SizedBox(width: SLSpacing.md),
+            Icon(icon, color: SLColors.accentGold, size: 22),
+            const SizedBox(width: SLSpacing.space3),
             Expanded(
               child: Text(
-                title,
+                label,
                 style: SLTypography.body.copyWith(
-                  color: SLColors.carbon,
+                  color: SLColors.textPrimary,
                 ),
               ),
             ),
-            if (trailing != null)
-              Text(
-                trailing!,
-                style: SLTypography.caption.copyWith(
-                  color: SLColors.textSecondary,
-                  fontSize: 11,
-                ),
-              ),
-            const SizedBox(width: SLSpacing.xs),
-            Icon(Icons.chevron_right, color: SLColors.textDisabled, size: 18),
+            Icon(Icons.chevron_right, color: SLColors.textDisabled, size: 20),
           ],
         ),
       ),
     );
   }
 }
+
+class _ProdutoItem {
+  final String name;
+  final double price;
+
+  const _ProdutoItem({required this.name, required this.price});
+
+  String get formattedPrice => 'R\$ ${price.toStringAsFixed(2)}';
+}
+
+const _sampleProducts = [
+  _ProdutoItem(name: 'Shampoo Profissional', price: 89.90),
+  _ProdutoItem(name: 'Condicionador Reconstrutor', price: 97.90),
+  _ProdutoItem(name: 'M\u00e1scara Capilar', price: 129.90),
+  _ProdutoItem(name: '\u00d3leo Reparador', price: 69.90),
+  _ProdutoItem(name: 'Kit Finalizador', price: 199.90),
+];

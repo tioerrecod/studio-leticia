@@ -38,13 +38,23 @@ class AuthService {
     try {
       final response = await _supabase
           .from('users')
-          .select()
-          .eq('id', userId)
+          .select('*, role:role_id(name), tenant_id')
+          .eq('auth_user_id', userId)
           .single();
-      
       _currentUser = AppUser.fromJson(response);
-    } catch (e) {
-      _currentUser = null;
+    } catch (_) {
+      if (_authUser != null) {
+        _currentUser = AppUser(
+          id: _authUser!.id,
+          name: (_authUser!.userMetadata?['full_name'] as String?) ?? _authUser!.email ?? 'Usuário',
+          email: _authUser!.email,
+          role: _authUser!.appMetadata['role'] as String? ?? 'customer',
+          tenantId: null,
+          createdAt: DateTime.tryParse(_authUser!.createdAt) ?? DateTime.now(),
+        );
+      } else {
+        _currentUser = null;
+      }
     }
   }
 

@@ -22,23 +22,23 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
     final appointmentsAsync = ref.watch(completedAppointmentsProvider);
 
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       appBar: AppBar(
         title: Text(
           'Minha Experiência',
           style: SLTypography.h3.copyWith(
-            color: SLColors.carbon,
+            color: SLColors.textPrimary,
             fontWeight: FontWeight.w400,
           ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(SLSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Last appointment before/after
             SLBeforeAfter(
               beforeImageUrl:
                   'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=400',
@@ -50,11 +50,10 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
 
             const SizedBox(height: SLSpacing.xxl),
 
-            // Appointments history with stages
             appointmentsAsync.when(
               loading: () => const SizedBox(
                 height: 200,
-                child: Center(child: CircularProgressIndicator(color: SLColors.champagne)),
+                child: Center(child: CircularProgressIndicator(color: SLColors.accentGold)),
               ),
               error: (_, __) => const SizedBox.shrink(),
               data: (appointments) {
@@ -75,7 +74,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                           Text(
                             'Última experiência',
                             style: SLTypography.h2.copyWith(
-                              color: SLColors.carbon,
+                              color: SLColors.textPrimary,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -115,14 +114,9 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
 
                     const SizedBox(height: SLSpacing.xxl),
 
-                    // Service info
-                    Container(
+                    SLCard(
+                      variant: SLCardVariant.outlined,
                       padding: const EdgeInsets.all(SLSpacing.md),
-                      decoration: BoxDecoration(
-                        color: SLColors.surface,
-                        borderRadius: SLRadius.card,
-                        border: Border.all(color: SLColors.border, width: 0.5),
-                      ),
                       child: Row(
                         children: [
                           Container(
@@ -130,10 +124,10 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                             height: 44,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              color: SLColors.cream,
+                              color: SLColors.bgSecondary,
                             ),
                             child: const Icon(Icons.spa_outlined,
-                                color: SLColors.champagne, size: 20),
+                                color: SLColors.accentGold, size: 20),
                           ),
                           const SizedBox(width: SLSpacing.md),
                           Expanded(
@@ -144,7 +138,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                                   lastAppointment.service?.name ?? 'Serviço',
                                   style: SLTypography.body.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    color: SLColors.carbon,
+                                    color: SLColors.textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -160,7 +154,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                           Text(
                             'R\$ ${(lastAppointment.service?.price ?? 0).toInt()}',
                             style: SLTypography.bodySmall.copyWith(
-                              color: SLColors.champagne,
+                              color: SLColors.accentGold,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -174,7 +168,6 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
 
             const SizedBox(height: SLSpacing.xxl),
 
-            // Rating section
             Padding(
               padding: const EdgeInsets.only(
                   left: SLSpacing.xs, bottom: SLSpacing.md),
@@ -185,34 +178,23 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                   Text(
                     'Depois',
                     style: SLTypography.h2.copyWith(
-                      color: SLColors.carbon,
+                      color: SLColors.textPrimary,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
-            Container(
+            SLCard(
+              variant: SLCardVariant.elevated,
               padding: const EdgeInsets.all(SLSpacing.lg),
-              decoration: BoxDecoration(
-                color: SLColors.surface,
-                borderRadius: SLRadius.card,
-                border: Border.all(color: SLColors.border, width: 0.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: SLColors.carbon.withValues(alpha: 0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Como foi sua experiência?',
                     style: SLTypography.h3.copyWith(
-                      color: SLColors.carbon,
+                      color: SLColors.textPrimary,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -232,11 +214,11 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: isSelected
-                                ? SLColors.champagne.withValues(alpha: 0.12)
+                                ? SLColors.accentGold.withValues(alpha: 0.12)
                                 : Colors.transparent,
                             border: Border.all(
                               color: isSelected
-                                  ? SLColors.champagne
+                                  ? SLColors.accentGold
                                   : Colors.transparent,
                               width: isSelected ? 2 : 0,
                             ),
@@ -248,42 +230,14 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
                     }).toList(),
                   ),
                   const SizedBox(height: SLSpacing.lg),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: SLRadius.button,
-                        gradient: const LinearGradient(
-                          colors: [SLColors.champagne, SLColors.gold],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: ElevatedButton(
-                        onPressed: _selectedRating > 0 && !_isSubmitting
-                            ? _submitRating
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.textOnDark,
-                          disabledBackgroundColor: SLColors.disabled,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: SLRadius.button),
-                        ),
-                        child: _isSubmitting
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(SLColors.textOnDark),
-                                ),
-                              )
-                            : const Text('Registrar avaliação'),
-                      ),
-                    ),
+                  SLButton(
+                    label: 'Registrar avaliação',
+                    onPressed: _selectedRating > 0 && !_isSubmitting
+                        ? _submitRating
+                        : null,
+                    variant: SLButtonVariant.primary,
+                    isExpanded: true,
+                    isLoading: _isSubmitting,
                   ),
                 ],
               ),
@@ -291,6 +245,7 @@ class _JourneyScreenState extends ConsumerState<JourneyScreen> {
             const SizedBox(height: SLSpacing.xxl),
           ],
         ),
+      ),
       ),
     );
   }

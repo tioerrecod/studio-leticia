@@ -40,12 +40,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: SLColors.carbon),
+          icon: const Icon(Icons.arrow_back_ios, color: SLColors.textPrimary),
           onPressed: () => context.go('/auth/login'),
         ),
       ),
@@ -72,15 +72,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             height: 64,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: SLColors.cream,
+              color: SLColors.bgSecondary,
             ),
-            child: const Icon(Icons.lock_reset, size: 28, color: SLColors.champagne),
+            child: const Icon(Icons.lock_reset, size: 28, color: SLColors.accentGold),
           ),
           const SizedBox(height: SLSpacing.xl),
           Text(
             'Esqueceu a senha?',
             style: SLTypography.display.copyWith(
-              color: SLColors.carbon,
+              color: SLColors.textPrimary,
               fontSize: 28,
               fontWeight: FontWeight.w300,
             ),
@@ -107,7 +107,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: SLRadius.input,
-                borderSide: const BorderSide(color: SLColors.champagne),
+                borderSide: const BorderSide(color: SLColors.accentGold),
               ),
             ),
             validator: (value) {
@@ -123,7 +123,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               decoration: BoxDecoration(
                 borderRadius: SLRadius.button,
                 gradient: const LinearGradient(
-                  colors: [SLColors.champagne, SLColors.gold],
+                  colors: [SLColors.accentGold, SLColors.accentGoldLight],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
@@ -133,7 +133,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  foregroundColor: SLColors.background,
+                  foregroundColor: SLColors.bgPrimary,
                   shape: RoundedRectangleBorder(borderRadius: SLRadius.button),
                 ),
                 child: _isLoading
@@ -142,7 +142,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(SLColors.background),
+                          valueColor: AlwaysStoppedAnimation<Color>(SLColors.bgPrimary),
                         ),
                       )
                     : Text(
@@ -157,7 +157,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             onPressed: () => context.go('/auth/login'),
             child: Text(
               'Voltar para o login',
-              style: SLTypography.body.copyWith(color: SLColors.champagne),
+              style: SLTypography.body.copyWith(color: SLColors.accentGold),
             ),
           ),
         ],
@@ -174,15 +174,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           height: 80,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            color: SLColors.cream,
+            color: SLColors.bgSecondary,
           ),
-          child: const Icon(Icons.mark_email_read, size: 36, color: SLColors.champagne),
+          child: const Icon(Icons.mark_email_read, size: 36, color: SLColors.accentGold),
         ),
         const SizedBox(height: SLSpacing.xl),
         Text(
           'Email enviado!',
           style: SLTypography.display.copyWith(
-            color: SLColors.carbon,
+            color: SLColors.textPrimary,
             fontSize: 28,
             fontWeight: FontWeight.w300,
           ),
@@ -198,7 +198,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         Text(
           _emailController.text,
           style: SLTypography.body.copyWith(
-            color: SLColors.champagne,
+            color: SLColors.accentGold,
             fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
@@ -211,7 +211,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             decoration: BoxDecoration(
               borderRadius: SLRadius.button,
               gradient: const LinearGradient(
-                colors: [SLColors.champagne, SLColors.gold],
+                colors: [SLColors.accentGold, SLColors.accentGoldLight],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -221,7 +221,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                foregroundColor: SLColors.carbon,
+                foregroundColor: SLColors.textPrimary,
                 shape: RoundedRectangleBorder(borderRadius: SLRadius.button),
               ),
               child: Text(

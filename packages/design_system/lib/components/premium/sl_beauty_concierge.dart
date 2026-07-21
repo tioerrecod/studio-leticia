@@ -31,7 +31,7 @@ class SLBeautyConcierge extends StatelessWidget {
         border: Border.all(color: SLColors.border, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: SLColors.carbon.withValues(alpha: 0.03),
+            color: SLColors.textPrimary.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -47,21 +47,21 @@ class SLBeautyConcierge extends StatelessWidget {
                 height: 32,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [SLColors.champagne, SLColors.gold],
+                    colors: [SLColors.accentGold, SLColors.accentGoldLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: SLRadius.chip,
                 ),
                 child: const Center(
-                  child: Icon(Icons.auto_awesome, color: SLColors.ivory, size: 16),
+                  child: Icon(Icons.auto_awesome, color: SLColors.bgPrimary, size: 16),
                 ),
               ),
               const SizedBox(width: SLSpacing.sm),
               Text(
                 'IA Beauty Concierge',
                 style: SLTypography.caption.copyWith(
-                  color: SLColors.champagne,
+                  color: SLColors.accentGold,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -81,7 +81,7 @@ class SLBeautyConcierge extends StatelessWidget {
           Text(
             message,
             style: SLTypography.body.copyWith(
-              color: SLColors.carbon,
+              color: SLColors.textPrimary,
               height: 1.6,
             ),
           ),
@@ -92,8 +92,8 @@ class SLBeautyConcierge extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onAction,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: SLColors.champagne.withValues(alpha: 0.1),
-                  foregroundColor: SLColors.champagne,
+                  backgroundColor: SLColors.accentGold.withValues(alpha: 0.1),
+                  foregroundColor: SLColors.accentGold,
                   elevation: 0,
                   shape: const RoundedRectangleBorder(
                     borderRadius: SLRadius.chip,
@@ -103,7 +103,7 @@ class SLBeautyConcierge extends StatelessWidget {
                 child: Text(
                   actionLabel,
                   style: SLTypography.buttonSmall.copyWith(
-                    color: SLColors.champagne,
+                    color: SLColors.accentGold,
                   ),
                 ),
               ),

@@ -66,7 +66,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -83,21 +83,20 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [SLColors.champagne, SLColors.gold],
+                        colors: [SLColors.accentGold, SLColors.accentGoldLight],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                     ),
                     child: const Center(
-                      child: Icon(Icons.shield_outlined, size: 32, color: SLColors.background),
+                      child: Icon(Icons.shield_outlined, size: 32, color: SLColors.bgPrimary),
                     ),
                   ),
                   const SizedBox(height: SLSpacing.xl),
                   Text(
                     'Beauty Command',
                     style: SLTypography.display.copyWith(
-                      color: SLColors.carbon,
-                      fontSize: 28,
+                      color: SLColors.textPrimary,
                       fontWeight: FontWeight.w300,
                     ),
                     textAlign: TextAlign.center,
@@ -123,7 +122,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -152,7 +151,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: SLRadius.input,
-                        borderSide: const BorderSide(color: SLColors.champagne),
+                        borderSide: const BorderSide(color: SLColors.accentGold),
                       ),
                     ),
                     validator: (value) {
@@ -162,37 +161,12 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                     },
                   ),
                   const SizedBox(height: SLSpacing.xl),
-                  SizedBox(
-                    height: 52,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: SLRadius.button,
-                        gradient: const LinearGradient(
-                          colors: [SLColors.champagne, SLColors.gold],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          foregroundColor: SLColors.background,
-                          shape: RoundedRectangleBorder(borderRadius: SLRadius.button),
-                        ),
-                        child: _isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(SLColors.background),
-                                ),
-                              )
-                            : Text('Entrar', style: SLTypography.buttonLarge.copyWith(letterSpacing: 1)),
-                      ),
-                    ),
+                  SLButton(
+                    label: 'Entrar',
+                    variant: SLButtonVariant.primary,
+                    isExpanded: true,
+                    isLoading: _isLoading,
+                    onPressed: _handleLogin,
                   ),
                 ],
               ),

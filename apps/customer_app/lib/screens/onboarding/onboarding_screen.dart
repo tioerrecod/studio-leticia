@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:design_system/design_system.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -17,19 +18,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Bem-vinda ao\nStudio Letícia',
       subtitle: 'Sua experiência de beleza premium começa aqui',
       icon: Icons.spa_outlined,
-      gradient: [SLColors.champagne, SLColors.gold],
+      gradient: [SLColors.accentGold, SLColors.accentGoldLight],
     ),
     OnboardingPage(
       title: 'Agende com\nFacilidade',
       subtitle: 'Escolha seu horário favorito em poucos toques',
       icon: Icons.calendar_today_outlined,
-      gradient: [SLColors.sage, SLColors.champagne],
+      gradient: [SLColors.stateSuccess, SLColors.accentGold],
     ),
     OnboardingPage(
       title: 'Experiência\nPersonalizada',
       subtitle: 'Recomendações inteligentes baseadas no seu perfil',
       icon: Icons.auto_awesome_outlined,
-      gradient: [SLColors.gold, SLColors.champagne],
+      gradient: [SLColors.accentGoldLight, SLColors.accentGold],
     ),
   ];
 
@@ -42,21 +43,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SLColors.background,
+      backgroundColor: SLColors.bgPrimary,
       body: SafeArea(
         child: Column(
           children: [
             // Skip Button
             Align(
               alignment: Alignment.topRight,
-              child: TextButton(
+              child: SLButton(
+                label: 'Pular',
+                variant: SLButtonVariant.text,
                 onPressed: () => _navigateToHome(),
-                child: Text(
-                  'Pular',
-                  style: SLTypography.body.copyWith(
-                    color: SLColors.textSecondary,
-                  ),
-                ),
               ),
             ),
 
@@ -88,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     height: 8,
                     decoration: BoxDecoration(
                       color: _currentPage == index
-                          ? SLColors.champagne
+                          ? SLColors.accentGold
                           : SLColors.border,
                       borderRadius: SLRadius.chip,
                     ),
@@ -102,50 +99,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.fromLTRB(
                 SLSpacing.xl, 0, SLSpacing.xl, SLSpacing.xxl,
               ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [SLColors.champagne, SLColors.gold],
-                    ),
-                    borderRadius: SLRadius.card,
-                    boxShadow: [
-                      BoxShadow(
-                        color: SLColors.champagne.withValues(alpha: 0.3),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_currentPage < _pages.length - 1) {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        _navigateToHome();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      foregroundColor: SLColors.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: SLRadius.card,
-                      ),
-                    ),
-                    child: Text(
-                      _currentPage < _pages.length - 1 ? 'Próximo' : 'Começar',
-                      style: SLTypography.button.copyWith(
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ),
+              child: SLButton(
+                label: _currentPage < _pages.length - 1 ? 'Próximo' : 'Começar',
+                variant: SLButtonVariant.primary,
+                isExpanded: true,
+                onPressed: () {
+                  if (_currentPage < _pages.length - 1) {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    _navigateToHome();
+                  }
+                },
               ),
             ),
           ],
@@ -155,8 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _navigateToHome() {
-    // TODO: Navigate to home screen
-    Navigator.of(context).pushReplacementNamed('/home');
+    context.go('/home');
   }
 }
 
@@ -203,7 +169,7 @@ class _OnboardingPageView extends StatelessWidget {
           Text(
             page.title,
             style: SLTypography.display.copyWith(
-              color: SLColors.carbon,
+              color: SLColors.textPrimary,
               fontWeight: FontWeight.w300,
               height: 1.2,
             ),

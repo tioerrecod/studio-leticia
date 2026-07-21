@@ -1,12 +1,4 @@
 {
-  "name": "studio-leticia-customer",
-  "framework": "flutter",
-  "buildCommand": "cd apps/customer_app && flutter build web --release --dart-define-from-file=../../.env",
-  "outputDirectory": "apps/customer_app/build/web",
-  "installCommand": "cd apps/customer_app && flutter pub get",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
   "github": {
     "silent": true
   }

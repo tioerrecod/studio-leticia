@@ -1,26 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:studio_leticia/models/models.dart';
+import 'package:core/core.dart';
 
 void main() {
-  group('Service', () {
+  group('ServiceItem', () {
     test('formattedPrice formats correctly', () {
-      final service = Service(
+      final service = ServiceItem(
         id: 'test',
         name: 'Test',
         description: 'Desc',
-        duration: '60 min',
+        duration: '60',
         price: 180,
+        category: 'Test',
       );
       expect(service.formattedPrice, 'R\$ 180');
     });
 
     test('isSignature defaults to false', () {
-      final service = Service(
+      final service = ServiceItem(
         id: 'test',
         name: 'Test',
         description: 'Desc',
-        duration: '60 min',
+        duration: '60',
         price: 100,
+        category: 'Test',
       );
       expect(service.isSignature, false);
     });
@@ -28,7 +30,7 @@ void main() {
 
   group('Professional', () {
     test('can be created without avatar', () {
-      final pro = Professional(id: '1', name: 'Ana');
+      const pro = Professional(id: '1', name: 'Ana');
       expect(pro.avatarUrl, isNull);
     });
   });
@@ -36,30 +38,14 @@ void main() {
   group('Appointment', () {
     test('formattedTime formats correctly', () {
       final date = DateTime(2026, 7, 15, 14, 30);
-      final service = Service(
-        id: 'test', name: 'Test', description: 'Desc',
-        duration: '60 min', price: 100,
-      );
       final apt = Appointment(
-        customerName: 'Rafaela',
-        service: service,
-        dateTime: date,
+        id: 'test',
+        professionalId: '1',
+        startAt: date,
+        status: 'scheduled',
+        createdAt: DateTime.now(),
       );
       expect(apt.formattedTime, '14:30');
-    });
-  });
-
-  group('HomeData', () {
-    test('can be created without optional fields', () {
-      final data = HomeData(
-        heroImageUrl: '',
-        studioName: 'Studio',
-        upcomingServices: const [],
-        loyaltyPoints: 0,
-        lifetimeVisits: 0,
-      );
-      expect(data.nextAppointment, isNull);
-      expect(data.aiConciergeMessage, isNull);
     });
   });
 }

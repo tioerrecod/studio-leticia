@@ -42,12 +42,12 @@ class SLClientMemoryTimeline extends StatelessWidget {
           child: Row(
             children: [
               const Icon(Icons.psychology_outlined,
-                  size: 18, color: SLColors.champagne),
+                  size: 18, color: SLColors.accentGold),
               const SizedBox(width: SLSpacing.sm),
               Text(
                 title,
                 style: SLTypography.h2.copyWith(
-                  color: SLColors.carbon,
+                  color: SLColors.textPrimary,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -91,7 +91,7 @@ class _MemoryItem extends StatelessWidget {
                 Text(
                   memory.message,
                   style: SLTypography.body.copyWith(
-                    color: SLColors.carbon,
+                    color: SLColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: SLSpacing.mini),

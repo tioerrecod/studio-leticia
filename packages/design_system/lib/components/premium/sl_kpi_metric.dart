@@ -39,10 +39,10 @@ class SLKpiMetric extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: SLColors.champagne.withValues(alpha: 0.1),
+                  color: SLColors.accentGold.withValues(alpha: 0.1),
                   borderRadius: SLRadius.chip,
                 ),
-                child: Icon(icon, size: 14, color: SLColors.champagne),
+                child: Icon(icon, size: 14, color: SLColors.accentGold),
               ),
               const Spacer(),
               Row(
@@ -68,7 +68,7 @@ class SLKpiMetric extends StatelessWidget {
           Text(
             value,
             style: SLTypography.h2.copyWith(
-              color: SLColors.carbon,
+              color: SLColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),

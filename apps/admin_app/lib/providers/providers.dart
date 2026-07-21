@@ -24,6 +24,14 @@ final serviceRepositoryProvider = Provider<ServiceRepository>((ref) {
   return ServiceRepository();
 });
 
+final serviceMediaRepositoryProvider = Provider<ServiceMediaRepository>((ref) {
+  return ServiceMediaRepository();
+});
+
+final appointmentRepositoryProvider = Provider<AppointmentRepository>((ref) {
+  return AppointmentRepository();
+});
+
 // ── Customer Providers ───────────────────────────────
 final customerSearchProvider = StateProvider<String>((ref) => '');
 
@@ -38,13 +46,25 @@ final customerCountProvider = FutureProvider<int>((ref) async {
   return repository.getCustomerCount();
 });
 
+// ── Appointment Providers ────────────────────────────
+final appointmentByIdProvider =
+    FutureProvider.family<Appointment, String>((ref, id) async {
+  final repository = ref.watch(appointmentRepositoryProvider);
+  final appointments = await repository.getAppointments();
+  return appointments.firstWhere(
+    (a) => a.id == id,
+    orElse: () => throw Exception('Agendamento não encontrado'),
+  );
+});
+
 // ── Financial Providers ──────────────────────────────
 final financialSummaryProvider = FutureProvider<FinancialSummary>((ref) async {
   final repository = ref.watch(financialRepositoryProvider);
   return repository.getTodaySummary();
 });
 
-final transactionsProvider = FutureProvider<List<FinancialTransaction>>((ref) async {
+final transactionsProvider =
+    FutureProvider<List<FinancialTransaction>>((ref) async {
   final repository = ref.watch(financialRepositoryProvider);
   return repository.getTransactions();
 });
@@ -52,6 +72,18 @@ final transactionsProvider = FutureProvider<List<FinancialTransaction>>((ref) as
 final openCashRegisterProvider = FutureProvider<CashRegister?>((ref) async {
   final repository = ref.watch(financialRepositoryProvider);
   return repository.getOpenCashRegister();
+});
+
+final todayExpensesProvider = FutureProvider<List<FinancialTransaction>>(
+    (ref) async {
+  final repository = ref.watch(financialRepositoryProvider);
+  final today = DateTime.now();
+  final startOfDay = DateTime(today.year, today.month, today.day);
+  return repository.getTransactions(
+    startDate: startOfDay,
+    endDate: startOfDay.add(const Duration(days: 1)),
+    type: 'expense',
+  );
 });
 
 // ── Dashboard Metrics (real data) ────────────────────
@@ -74,7 +106,6 @@ final dashboardMetricsProvider = FutureProvider<DashboardMetrics>((ref) async {
       returnPrediction: 82,
     );
   } catch (e) {
-    // Return mock data on error
     return DashboardMetrics(
       revenue: 28450.00,
       revenueChange: 12.5,
