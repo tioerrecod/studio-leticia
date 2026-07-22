@@ -10,9 +10,9 @@ final _serviceDetailProvider = FutureProvider.family<ServiceItem, String>((ref, 
   return repository.getServiceById(id);
 });
 
-final _serviceMediaProvider = FutureProvider.family<List<ServiceMedia>, String>((ref, serviceId) async {
+final _serviceMediaProvider = StreamProvider.family<List<ServiceMedia>, String>((ref, serviceId) {
   final repository = ref.watch(serviceMediaRepositoryProvider);
-  return repository.getServiceMedia(serviceId);
+  return repository.watchServiceMedia(serviceId);
 });
 
 class ServiceDetailScreen extends ConsumerWidget {

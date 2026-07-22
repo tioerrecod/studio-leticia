@@ -54,3 +54,6 @@ CREATE POLICY "Service media admin update"
 CREATE POLICY "Service media admin delete"
   ON service_media FOR DELETE
   USING (public.is_admin());
+
+-- Realtime: permitir que mudanças na tabela sejam transmitidas em tempo real
+ALTER PUBLICATION supabase_realtime ADD TABLE service_media;

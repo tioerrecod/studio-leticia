@@ -62,6 +62,15 @@ class ServiceMediaRepository {
     }
   }
 
+  Stream<List<ServiceMedia>> watchServiceMedia(String serviceId) {
+    return _supabase
+        .from('service_media')
+        .stream(primaryKey: ['id'])
+        .eq('service_id', serviceId)
+        .order('sort_order')
+        .map((rows) => rows.map((r) => ServiceMedia.fromJson(r)).toList());
+  }
+
   Future<void> setCover(String id, String serviceId) async {
     try {
       await _supabase

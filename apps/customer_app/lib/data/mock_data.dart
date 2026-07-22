@@ -12,12 +12,12 @@ final List<ServiceItem> mockServices = [
     category: 'Cortes',
   ),
   ServiceItem(
-    id: 'hidratacao-premium',
-    name: 'Hidratação Premium',
-    description: 'Tratamento profundo com ácido hialurônico e queratina.',
-    duration: '90',
-    price: 250,
-    category: 'Tratamentos',
+    id: 'box-braids',
+    name: 'Box Braids',
+    description: 'Tranças box braids médias com acabamento profissional.',
+    duration: '180',
+    price: 280,
+    category: 'Tranças',
   ),
   ServiceItem(
     id: 'escova-modeladora',

@@ -6,9 +6,9 @@ import 'package:design_system/design_system.dart';
 import 'package:core/core.dart';
 import '../../providers/providers.dart';
 
-final _serviceMediaListProvider = FutureProvider.family<List<ServiceMedia>, String>((ref, serviceId) async {
+final _serviceMediaListProvider = StreamProvider.family<List<ServiceMedia>, String>((ref, serviceId) {
   final repository = ref.watch(serviceMediaRepositoryProvider);
-  return repository.getServiceMedia(serviceId);
+  return repository.watchServiceMedia(serviceId);
 });
 
 final _allServicesProvider = FutureProvider<List<ServiceItem>>((ref) async {
@@ -185,20 +185,20 @@ class _ServiceMediaContentState extends State<_ServiceMediaContent> {
     return user?.tenantId ?? '00000000-0000-0000-0000-000000000001';
   }
 
-  Future<void> _pickAndUpload() async {
+  Future<void> _pickAndUploadFile({required bool isVideo}) async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.media,
+      type: FileType.custom,
+      allowedExtensions: isVideo ? ['mp4', 'mov'] : ['jpg', 'jpeg', 'png', 'webp'],
       allowMultiple: false,
+      withData: true,
     );
 
     if (result == null || result.files.isEmpty) return;
 
     final file = result.files.first;
-    final filePath = file.path;
-    if (filePath == null) return;
+    if (file.bytes == null) return;
 
-        final isVideo = ['mp4', 'mov', 'avi', 'mkv', 'webm'].contains((file.extension ?? '').toLowerCase());
-        final contentType = isVideo ? 'video/${file.extension ?? 'mp4'}' : 'image/${file.extension ?? 'jpeg'}';
+    final contentType = isVideo ? 'video/mp4' : 'image/jpeg';
 
     setState(() {
       _isUploading = true;
@@ -207,49 +207,30 @@ class _ServiceMediaContentState extends State<_ServiceMediaContent> {
 
     try {
       final repository = widget.ref.read(serviceMediaRepositoryProvider);
+      final fileName = '${widget.service.id}/${DateTime.now().millisecondsSinceEpoch}.${file.extension ?? (isVideo ? 'mp4' : 'jpg')}';
 
-      if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
-        // URL was pasted — add directly
-        await repository.addServiceMedia(
-          ServiceMedia(
-            id: '',
-            tenantId: _tenantId!,
-            serviceId: widget.service.id,
-            url: filePath,
-            type: isVideo ? 'video' : 'image',
-            caption: _captionController.text.trim().isEmpty ? null : _captionController.text.trim(),
-            isCover: false,
-            sortOrder: 0,
-            createdAt: DateTime.now(),
-          ),
-        );
-      } else {
-        // File picked from device — upload to Supabase Storage
-        final fileName = '${widget.service.id}/${DateTime.now().millisecondsSinceEpoch}.${file.extension ?? 'jpg'}';
+      final storage = Supabase.instance.client.storage;
+      await storage.from('service-media').uploadBinary(
+        fileName,
+        file.bytes!,
+        fileOptions: FileOptions(contentType: contentType),
+      );
 
-        final storage = Supabase.instance.client.storage;
-        await storage.from('service-media').uploadBinary(
-          fileName,
-          file.bytes!,
-          fileOptions: FileOptions(contentType: contentType),
-        );
+      final url = storage.from('service-media').getPublicUrl(fileName);
 
-        final url = storage.from('service-media').getPublicUrl(fileName);
-
-        await repository.addServiceMedia(
-          ServiceMedia(
-            id: '',
-            tenantId: _tenantId!,
-            serviceId: widget.service.id,
-            url: url,
-            type: isVideo ? 'video' : 'image',
-            caption: _captionController.text.trim().isEmpty ? null : _captionController.text.trim(),
-            isCover: false,
-            sortOrder: 0,
-            createdAt: DateTime.now(),
-          ),
-        );
-      }
+      await repository.addServiceMedia(
+        ServiceMedia(
+          id: '',
+          tenantId: _tenantId!,
+          serviceId: widget.service.id,
+          url: url,
+          type: isVideo ? 'video' : 'image',
+          caption: _captionController.text.trim().isEmpty ? null : _captionController.text.trim(),
+          isCover: false,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
 
       _captionController.clear();
       widget.ref.invalidate(_serviceMediaListProvider(widget.service.id));
@@ -335,29 +316,38 @@ class _ServiceMediaContentState extends State<_ServiceMediaContent> {
           Text(widget.service.category, style: SLTypography.caption.copyWith(color: SLColors.textSecondary)),
           const SizedBox(height: SLSpacing.space6),
 
-          // Upload button + caption
+          // Caption field
+          SizedBox(
+            height: 44,
+            child: TextField(
+              controller: _captionController,
+              decoration: InputDecoration(
+                hintText: 'Legenda (opcional)',
+                hintStyle: SLTypography.caption.copyWith(color: SLColors.textDisabled),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              ),
+              style: SLTypography.caption.copyWith(color: SLColors.textPrimary),
+            ),
+          ),
+          const SizedBox(height: SLSpacing.space3),
+          // Upload buttons
           Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 44,
-                  child: TextField(
-                    controller: _captionController,
-                    decoration: InputDecoration(
-                      hintText: 'Legenda (opcional)',
-                      hintStyle: SLTypography.caption.copyWith(color: SLColors.textDisabled),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                    style: SLTypography.caption.copyWith(color: SLColors.textPrimary),
-                  ),
+                child: SLButton(
+                  label: '📷 Adicionar Foto',
+                  variant: SLButtonVariant.outline,
+                  onPressed: _isUploading ? null : () => _pickAndUploadFile(isVideo: false),
                 ),
               ),
               const SizedBox(width: SLSpacing.space2),
-              SLButton(
-                label: _isUploading ? 'Enviando...' : 'Adicionar',
-                variant: SLButtonVariant.primary,
-                onPressed: _isUploading ? null : _pickAndUpload,
+              Expanded(
+                child: SLButton(
+                  label: '🎥 Adicionar Vídeo',
+                  variant: SLButtonVariant.outline,
+                  onPressed: _isUploading ? null : () => _pickAndUploadFile(isVideo: true),
+                ),
               ),
             ],
           ),
